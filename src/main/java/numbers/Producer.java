@@ -13,7 +13,7 @@ public class Producer {
         Properties config = new Properties();
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         KafkaProducer<String, String> producer = new KafkaProducer<>(config, new StringSerializer(), new StringSerializer());
-        
+
         System.out.println( "Produce!" );
     }
 }
