@@ -56,7 +56,6 @@ class Translator {
         }
     };
 
-
     static final HashMap<String, HashMap<String, Integer>> numberIndex = new HashMap<>() {
         {
             put("ENG", englishNumbers);
@@ -65,7 +64,7 @@ class Translator {
         }
     };
 
-    static Integer translateNumber(String language, String number) {
+    private static Integer translateNumber(String language, String number) {
          return numberIndex.get(language).get(number);
     }
 

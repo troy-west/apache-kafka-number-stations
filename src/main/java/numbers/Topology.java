@@ -1,6 +1,7 @@
 package numbers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -11,6 +12,8 @@ import java.time.Duration;
 import java.util.Properties;
 
 class Topology {
+
+    private static ObjectMapper mapper = new ObjectMapper();
 
     static final Properties config = new Properties() {
         {
@@ -43,30 +46,30 @@ class Topology {
             @Override
             public JsonNode apply(JsonNode value) {
                 ObjectNode obj = (ObjectNode) value;
-                if (obj.hasNonNull("type") && obj.hasNonNull("numbers")) {
-                    obj.put("number", Translator.translateNumbers(obj.get("type").textValue(), (ArrayNode) obj.get("numbers")));
+                if (obj.hasNonNull("type") && obj.hasNonNull("value")) {
+                    obj.put("value", Translator.translateNumbers(obj.get("type").textValue(), (ArrayNode) obj.get("value")));
                 }
-                obj.remove("numbers");
                 return obj;
             }
         });
     }
 
-    static KTable correlate(KStream<String, JsonNode> stream) {
+    static KTable<Windowed<String>, ArrayNode> correlate(KStream<String, JsonNode> stream) {
         return stream
                 .groupByKey()
                 .windowedBy(TimeWindows.of(Duration.ofSeconds(10)))
-                .aggregate(new Initializer<Object>() {
-                    @Override
-                    public Object apply() {
-                        return null;
-                    }
-                }, new Aggregator<String, JsonNode, Object>() {
-                    @Override
-                    public Object apply(String s, JsonNode jsonNode, Object o) {
-                        return null;
-                    }
-                });
+                .aggregate(
+                        new Initializer<ArrayNode>() {
+                            @Override
+                            public ArrayNode apply() {
+                                return mapper.createArrayNode();
+                            }
+                        }, new Aggregator<String, JsonNode, ArrayNode>() {
+                            @Override
+                            public ArrayNode apply(String key, JsonNode value, ArrayNode aggregation) {
+                                return aggregation.add(value);
+                            }
+                        }, Materialized.as("PT10S-Store"));
     }
 
 }
