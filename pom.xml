@@ -7,6 +7,49 @@
   <version>1.0-SNAPSHOT</version>
   <name>apache-kafka-masterclass</name>
   <url>http://maven.apache.org</url>
+
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>clojars</id>
+      <url>https://repo.clojars.org/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.theoryinpractise</groupId>
+        <artifactId>clojure-maven-plugin</artifactId>
+        <version>1.8.3</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -25,6 +68,53 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.9.8</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>clojure</artifactId>
+      <version>1.10.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>tools.logging</artifactId>
+      <version>0.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>data.json</artifactId>
+      <version>0.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>clojure.java-time</groupId>
+      <artifactId>clojure.java-time</artifactId>
+      <version>0.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>http-kit</groupId>
+      <artifactId>http-kit</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>metosin</groupId>
+      <artifactId>reitit-core</artifactId>
+      <version>0.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>metosin</groupId>
+      <artifactId>reitit-ring</artifactId>
+      <version>0.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>hiccup</groupId>
+      <artifactId>hiccup</artifactId>
+      <version>1.0.5</version>
+    </dependency>
+
   </dependencies>
 
   <properties>
