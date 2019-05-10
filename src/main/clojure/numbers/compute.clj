@@ -64,13 +64,11 @@
                                      (< (:lat message) -75)))])))
 
 (defn topology
-  []
-  (let [builder (StreamsBuilder.)]
-    (-> (stream builder)
-        (filter-known)
-        (translate)
-        (correlate "PT10S-Store"))
-    (.build builder)))
+  [builder]
+  (-> (stream builder)
+      (filter-known)
+      (translate)
+      (correlate "PT10S-Store")))
 
 (defn start!
   [^Topology topology]

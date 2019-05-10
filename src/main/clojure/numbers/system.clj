@@ -2,11 +2,15 @@
   (:require [clojure.tools.logging :as log]
             [numbers.compute :as compute]
             [numbers.http :as http])
+  (:import numbers.Topology
+           org.apache.kafka.streams.StreamsBuilder)
   (:gen-class))
 
 (defn start!
   [port]
-  (http/start! port (compute/start! (numbers.compute/topology))))
+  (let [builder (StreamsBuilder.)]
+    (numbers.compute/topology builder)
+    (http/start! port (compute/start! (.build builder)))))
 
 (defn -main
   [& args]
