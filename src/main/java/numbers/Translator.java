@@ -65,11 +65,13 @@ class Translator {
          return numberIndex.get(language).get(number);
     }
 
-    static Integer translateNumbers(String language, String[] numbers) {
-        StringBuilder str = new StringBuilder();
-        for (String number : numbers) {
-            str.append(Translator.translateNumber(language, number));
+    static int translateNumbers(String language, String[] values) {
+        StringBuilder output = new StringBuilder();
+
+        for (int i = 0; i < values.length; i++) {
+            output.append(Translator.translateNumber(language, values[i]).toString());
         }
-        return Integer.parseInt(str.toString());
+
+        return Integer.parseInt(output.toString());
     }
 }

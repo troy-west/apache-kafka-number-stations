@@ -49,6 +49,43 @@ public class TopologyTest extends TestCase {
     //     return windowValues;
     // }
 
+    Message[] testMessages = new Message[] {
+        new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "eins", "null", "sechs" }; } },
+        new Message() { { time = 1557125670790L; type = "UXX"; name = "XRAY"; } },
+        new Message() { { time = 1557125670794L; type = "MOR"; name = "425"; longitude = 77; lat = 25; content = new String[] { ".....", "----." }; } },
+        new Message() { { time = 1557125670795L; type = "UXX"; name = "XRAY"; } },
+        new Message() { { time = 1557125670799L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; content = new String[] { "two" }; } },
+        new Message() { { time = 1557125670807L; type = "ENG"; name = "159"; longitude = -55; lat = -18; content = new String[] { "three", "five" }; } },
+        new Message() { { time = 1557125670812L; type = "ENG"; name = "426"; longitude = 78; lat = 26; content = new String[] { "six", "three" }; } },
+        new Message() { { time = 1557125670814L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "drei", "neun" }; } },
+        new Message() { { time = 1557125670819L; type = "MOR"; name = "425"; longitude = 77; lat = 25; content = new String[] { ".----" }; } },
+        new Message() { { time = 1557125670824L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; content = new String[] { "two" }; } },
+        new Message() { { time = 1557125670827L; type = "ENG"; name = "324"; longitude = 27; lat = 9; content = new String[] { "two", "nine" }; } },
+        new Message() { { time = 1557125670829L; type = "GER"; name = "460"; longitude = 95; lat = 31; content = new String[] { "fünf", "sieben" }; } },
+        new Message() { { time = 1557125670831L; type = "GER"; name = "355"; longitude = 42; lat = 14; content = new String[] { "sieben" }; } },
+        new Message() { { time = 1557125670832L; type = "ENG"; name = "159"; longitude = -55; lat = -18; content = new String[] { "three", "five" }; } },
+        new Message() { { time = 1557125670837L; type = "ENG"; name = "426"; longitude = 78; lat = 26; content = new String[] { "one" }; } },
+        new Message() { { time = 1557125670839L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "fünf", "fünf" }; } },
+        new Message() { { time = 1557125670840L; type = "GER"; name = "505"; longitude = 117; lat = 39; content = new String[] { "eins", "null", "vier" }; } },
+        new Message() { { time = 1557125670841L; type = "GER"; name = "487"; longitude = 108; lat = 36; content = new String[] { "eins", "null", "neun" }; } },
+        new Message() { { time = 1557125670842L; type = "MOR"; name = "20"; longitude = -125; lat = -41; content = new String[] { "...--" }; } },
+        new Message() { { time = 1557125670843L; type = "GER"; name = "199"; longitude = -35; lat = -11; content = new String[] { "eins", "vier" }; } }
+    };
+
+    public void sendMessage(TopologyTestDriver driver, Message message) {
+        driver.pipeInput(createRecord(message));
+    }
+
+    public void sendMessages(TopologyTestDriver driver, Message[] messages) {
+        for (Message m: messages) {
+            sendMessage(driver, m);
+        }
+    }
+
+    public void assertEqualsJson(Message a, Message b) throws javax.xml.bind.JAXBException {
+        assertEquals(Json.serialize(a), Json.serialize(b));
+    }
+
     public void testFilterRecognized() throws javax.xml.bind.JAXBException {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Topology.createStream(builder);
@@ -60,62 +97,61 @@ public class TopologyTest extends TestCase {
         TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
 
         try {
-            Message expected1 = new Message();
-            expected1.time = 10;
-            expected1.type = "ENG";
-            expected1.name = "E-test-english";
-            expected1.content = new String[] {"two", "five", "one"};
+            sendMessages(driver, testMessages);
 
-            Message notExpected = new Message();
-            notExpected.time = 20;
-            notExpected.name = "X-unknown";
-            notExpected.number = null;
+            Message[] expectedMessages = new Message[] {
+                new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "eins", "null", "sechs" }; } },
+                new Message() { { time = 1557125670794L; type = "MOR"; name = "425"; longitude = 77; lat = 25; content = new String[] { ".....", "----." }; } },
+                new Message() { { time = 1557125670799L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; content = new String[] { "two" }; } },
+                new Message() { { time = 1557125670807L; type = "ENG"; name = "159"; longitude = -55; lat = -18; content = new String[] { "three", "five" }; } },
+                new Message() { { time = 1557125670812L; type = "ENG"; name = "426"; longitude = 78; lat = 26; content = new String[] { "six", "three" }; } }
+            };
 
-            Message expected2 = new Message();
-            expected2.time = 30;
-            expected2.type = "GER";
-            expected2.name = "G-test-german";
-            expected2.number = 100;
-
-            driver.pipeInput(createRecord(expected1));
-            driver.pipeInput(createRecord(notExpected));
-            driver.pipeInput(createRecord(expected2));
-
-            assertEquals(Json.serialize(expected1), Json.serialize(readOutput(driver, outputTopic)));
-            assertEquals(Json.serialize(expected2), Json.serialize(readOutput(driver, outputTopic)));
-            assertNull(readOutput(driver, outputTopic));
+            for(Message m: expectedMessages) {
+                System.out.println(Json.serialize(m));
+                assertEquals(m, readOutput(driver, outputTopic));
+            }
         } finally {
             driver.close();
         }
     }
 
-    // public void testTranslate() {
-    //     StreamsBuilder builder = new StreamsBuilder();
-    //     KStream<String, JsonNode> stream = Topology.createStream(builder);
+    public void testTranslate() throws javax.xml.bind.JAXBException {
+        StreamsBuilder builder = new StreamsBuilder();
+        KStream<String, Message> stream = Topology.createStream(builder);
 
-    //     String outputTopic = "output";
-    //     stream = Topology.translate(stream);
-    //     stream.to(outputTopic);
+        String outputTopic = "output";
+        stream = Topology.translate(Topology.filterRecognized(stream));
+        stream.to(outputTopic);
 
-    //     TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
+        TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
 
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 10, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": [\"two\", \"five\", \"one\"]}")));
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 30, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": [\"eins\", \"null\", \"null\"]}")));
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 50, \"type\": \"MOR\", \"name\": \"M-test-morse\", \"value\": [\".----\", \"..---\", \"-----\"]}")));
+        try {
+            sendMessages(driver, testMessages);
 
-    //     assertEquals(
-    //             deserializeJson("{\"time\": 10, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 251}"),
-    //             readOutput(driver, outputTopic));
-    //     assertEquals(
-    //             deserializeJson("{\"time\": 30, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 100}"),
-    //             readOutput(driver, outputTopic));
-    //     assertEquals(
-    //             deserializeJson("{\"time\": 50, \"type\": \"MOR\", \"name\": \"M-test-morse\", \"value\": 120}"),
-    //             readOutput(driver, outputTopic));
-    //     assertNull(readOutput(driver, outputTopic));
+            Message[] expectedMessages = new Message[] {
+                new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; numbers = new int[] { 106 }; } },
+                new Message() { { time = 1557125670794L; type = "MOR"; name = "425"; longitude = 77; lat = 25; numbers = new int[] { 59 }; } },
+                new Message() { { time = 1557125670799L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; numbers = new int[] { 2 }; } },
+                new Message() { { time = 1557125670807L; type = "ENG"; name = "159"; longitude = -55; lat = -18; numbers = new int[] { 35 }; } },
+                new Message() { { time = 1557125670812L; type = "ENG"; name = "426"; longitude = 78; lat = 26; numbers = new int[] { 63 }; } }
+            };
 
-    //     driver.close();
-    // }
+            for(Message m: expectedMessages) {
+
+                Message result = readOutput(driver, outputTopic);
+
+                System.out.println("from:");
+                System.out.println(Json.serialize(m));
+                System.out.println("to:");
+                System.out.println(Json.serialize(result));
+
+                assertEquals(m, result);
+            }
+        } finally {
+            driver.close();
+        }
+    }
 
     // public void testCorrelate() {
     //     StreamsBuilder builder = new StreamsBuilder();

@@ -42,13 +42,13 @@ public class Topology {
         return stream.mapValues(new ValueMapper<Message, Message>() {
             @Override
             public Message apply(Message message) {
-                Message output = new Message();
-
                 if (message.type != null && message.content != null) {
-                    output.number = Translator.translateNumbers(message.type, message.content);
+                    message.numbers = new int[] { Translator.translateNumbers(message.type, message.content) };
                 }
 
-                return output;
+                message.content = null;
+
+                return message;
             }
         });
     }

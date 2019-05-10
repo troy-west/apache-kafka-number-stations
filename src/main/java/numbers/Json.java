@@ -24,8 +24,8 @@ public class Json {
         return unmarshaller.unmarshal(json, expectedType).getValue();
     }
 
-    public static String serialize(Object content) throws javax.xml.bind.JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(content.getClass());
+    public static String serialize(Message content) throws javax.xml.bind.JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(Message.class);
 
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
