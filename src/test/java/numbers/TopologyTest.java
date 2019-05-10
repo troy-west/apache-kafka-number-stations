@@ -34,22 +34,6 @@ public class TopologyTest extends TestCase {
         }
     }
 
-    // private static Message getWindowValues(KeyValueIterator iterator) {
-    //     List<int> values = new ArrayList<int>();
-
-    //     return new Message() {
-    //         contentDecoded = new int[] {};
-    //     }
-    //     ArrayNode windowValues = mapper.createArrayNode();
-    //     iterator.forEachRemaining(new Consumer<KeyValue>() {
-    //         @Override
-    //         public void accept(KeyValue o) {
-    //             values.add(o.value);
-    //         }
-    //     });
-    //     return windowValues;
-    // }
-
     Message[] testMessages = new Message[] {
         new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "eins", "null", "sechs" }; } },
         new Message() { { time = 1557125670790L; type = "UXX"; name = "XRAY"; } },
