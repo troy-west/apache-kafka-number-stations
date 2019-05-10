@@ -24,6 +24,7 @@ import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
+import java.io.StringWriter;
 
 import java.util.function.Consumer;
 
@@ -37,6 +38,34 @@ public class TopologyTest extends TestCase {
 
     private static JsonNode deserializeJson(String json) {
         return new JsonDeserializer().deserialize("", json.getBytes());
+    }
+
+    public <T> T jaxDeserializeJson(String content, Class<T> expectedType) throws javax.xml.bind.JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(expectedType);
+
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+
+        StreamSource json = new StreamSource(new StringReader(content));
+
+        return unmarshaller.unmarshal(json, expectedType).getValue();
+    }
+
+    public <T> String jaxSerializeJson(Object content, Class<T> expectedType) throws javax.xml.bind.JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(expectedType);
+
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+
+        StringWriter json = new StringWriter();
+
+        marshaller.marshal(content, json);
+
+        return json.toString();
     }
 
     private static ConsumerRecord<byte[], byte[]> createRecord(JsonNode value) {
@@ -69,26 +98,14 @@ public class TopologyTest extends TestCase {
     }
 
     public void testJaxbSerialize() throws javax.xml.bind.JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(Root.class);
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
-
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         Root root = new Root();
         root.a = 1;
-        marshaller.marshal(root, System.out);
+
+        System.out.println(jaxSerializeJson(root, Root.class));
     }
 
     public void testJaxbDeserialize() throws javax.xml.bind.JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(Root.class);
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
-
-        StreamSource json = new StreamSource(new StringReader("{\"a\": 1}"));
-
-        Root root = unmarshaller.unmarshal(json, Root.class).getValue();
+        Root root = jaxDeserializeJson("{\"a\": 1}", Root.class);
 
         System.out.println(root.a);
     }
