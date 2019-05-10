@@ -6,7 +6,7 @@
 
 (defn start!
   [port]
-  (http/start! port (compute/start!)))
+  (http/start! port (compute/start! (numbers.compute/topology))))
 
 (defn -main
   [& args]
