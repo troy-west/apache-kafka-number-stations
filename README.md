@@ -1,6 +1,6 @@
 # Run App
 
-mvn exec:java -Dexec.mainClass="numbers.system"
+mvn clean compile exec:java -Dexec.mainClass="numbers.system"
 
 # Run Tests
 
