@@ -70,14 +70,19 @@ public class TopologyTest extends TestCase {
             notExpected.time = 20;
             notExpected.name = "X-unknown";
             notExpected.number = null;
-            // Message expected2 = new Message() { { time = 30; type = "GER"; name = "G-test-german"; number = 100; } };
+
+            Message expected2 = new Message();
+            expected2.time = 30;
+            expected2.type = "GER";
+            expected2.name = "G-test-german";
+            expected2.number = 100;
 
             driver.pipeInput(createRecord(expected1));
             driver.pipeInput(createRecord(notExpected));
-            // driver.pipeInput(createRecord(expected2));
+            driver.pipeInput(createRecord(expected2));
 
             assertEquals(Json.serialize(expected1), Json.serialize(readOutput(driver, outputTopic)));
-            // assertEquals(expected2, readOutput(driver, outputTopic));
+            assertEquals(Json.serialize(expected2), Json.serialize(readOutput(driver, outputTopic)));
             assertNull(readOutput(driver, outputTopic));
         } finally {
             driver.close();
