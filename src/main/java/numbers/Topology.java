@@ -15,7 +15,7 @@ public class Topology {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
-    static final Properties config = new Properties() {
+    public static final Properties config = new Properties() {
         {
             put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-default");
             put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -26,6 +26,10 @@ public class Topology {
 
     public static KStream<String, JsonNode> createStream(StreamsBuilder builder) {
         return builder.stream("radio-logs", Consumed.with(new TimeExtractor()));
+    }
+
+    public static void topology(StreamsBuilder builder) {
+        correlate(translate(filterRecognized(createStream(builder))));
     }
 
     public static KStream<String, JsonNode> filterRecognized(KStream<String, JsonNode> stream) {
@@ -71,5 +75,4 @@ public class Topology {
                             }
                         }, Materialized.as("PT10S-Store"));
     }
-
 }

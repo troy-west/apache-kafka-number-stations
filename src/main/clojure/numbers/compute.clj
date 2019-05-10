@@ -71,8 +71,8 @@
       (correlate "PT10S-Store")))
 
 (defn start!
-  [^Topology topology]
-  (let [^KafkaStreams streams (KafkaStreams. topology (StreamsConfig. config))]
+  [^Topology topology ^StreamsConfig config]
+  (let [^KafkaStreams streams (KafkaStreams. topology config)]
     (.start streams)
     streams))
 
