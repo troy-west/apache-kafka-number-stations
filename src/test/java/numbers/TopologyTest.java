@@ -15,6 +15,16 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+
 import java.util.function.Consumer;
 
 public class TopologyTest extends TestCase {
@@ -51,6 +61,36 @@ public class TopologyTest extends TestCase {
             }
         });
         return windowValues;
+    }
+
+    @XmlRootElement
+    public static class Root {
+        public int a;
+    }
+
+    public void testJaxbSerialize() throws javax.xml.bind.JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(Root.class);
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        Root root = new Root();
+        root.a = 1;
+        marshaller.marshal(root, System.out);
+    }
+
+    public void testJaxbDeserialize() throws javax.xml.bind.JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(Root.class);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+
+        StreamSource json = new StreamSource(new StringReader("{\"a\": 1}"));
+
+        Root root = unmarshaller.unmarshal(json, Root.class).getValue();
+
+        System.out.println(root.a);
     }
 
     public void testFilterRecognized() {
