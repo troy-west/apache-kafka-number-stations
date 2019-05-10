@@ -9,7 +9,8 @@
 (defn start!
   [port]
   (let [builder (StreamsBuilder.)]
-    (numbers.compute/topology builder)
+    ;;    (numbers.compute/topology builder)
+    (numbers.Topology/createStream builder)
     (http/start! port (compute/start! (.build builder)))))
 
 (defn -main

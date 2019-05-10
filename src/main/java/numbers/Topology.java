@@ -11,7 +11,7 @@ import org.apache.kafka.streams.kstream.*;
 import java.time.Duration;
 import java.util.Properties;
 
-class Topology {
+public class Topology {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -24,11 +24,11 @@ class Topology {
         }
     };
 
-    static KStream<String, JsonNode> createStream(StreamsBuilder builder) {
+    public static KStream<String, JsonNode> createStream(StreamsBuilder builder) {
         return builder.stream("radio-logs", Consumed.with(new TimeExtractor()));
     }
 
-    static KStream<String, JsonNode> filterRecognized(KStream<String, JsonNode> stream) {
+    public static KStream<String, JsonNode> filterRecognized(KStream<String, JsonNode> stream) {
         return stream.filter(new Predicate<String, JsonNode>() {
             @Override
             public boolean test(String key, JsonNode value) {
@@ -41,7 +41,7 @@ class Topology {
         });
     }
 
-    static KStream<String, JsonNode> translate(KStream<String, JsonNode> stream) {
+    public static KStream<String, JsonNode> translate(KStream<String, JsonNode> stream) {
         return stream.mapValues(new ValueMapper<JsonNode, JsonNode>() {
             @Override
             public JsonNode apply(JsonNode value) {
@@ -54,7 +54,7 @@ class Topology {
         });
     }
 
-    static KTable<Windowed<String>, ArrayNode> correlate(KStream<String, JsonNode> stream) {
+    public static KTable<Windowed<String>, ArrayNode> correlate(KStream<String, JsonNode> stream) {
         return stream
                 .groupByKey()
                 .windowedBy(TimeWindows.of(Duration.ofSeconds(10)))
