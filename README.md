@@ -8,11 +8,11 @@ mvn test
 
 # Run Producer
 
-mvn exec:java -Dexec.mainClass="numbers.Producer"
+mvn compile exec:java -Dexec.mainClass="numbers.radio"
 
 # Building the web app
 
-mvn package
+mvn clean compile package
 
 # Running the web app
 

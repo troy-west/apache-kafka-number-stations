@@ -1,7 +1,8 @@
 (ns numbers.radio
   (:require [numbers.image :as image]
             [numbers.kafka :as kafka])
-  (:import (org.apache.kafka.clients.producer ProducerRecord KafkaProducer)))
+  (:import (org.apache.kafka.clients.producer ProducerRecord KafkaProducer))
+  (:gen-class))
 
 (defn listen
   "Nearly three hours of Numbers Station broadcast from 1557125670763 to 1557135278803"
@@ -23,3 +24,7 @@
   (with-open [^KafkaProducer producer (kafka/producer)]
     (doseq [message (listen)]
       (.send producer (ProducerRecord. "radio-logs" (:name message) message)))))
+
+(defn -main
+  [& argv]
+  (produce))
