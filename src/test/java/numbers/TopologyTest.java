@@ -11,6 +11,7 @@ import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
+import org.apache.kafka.streams.state.WindowStore;
 
 import java.util.function.Consumer;
 
@@ -138,77 +139,40 @@ public class TopologyTest extends TestCase {
             };
 
             for(Message m: expectedMessages) {
-
-                Message result = readOutput(driver, outputTopic);
-
-                System.out.println("from:");
-                System.out.println(Json.serialize(m));
-                System.out.println("to:");
-                System.out.println(Json.serialize(result));
-
-                assertEquals(m, result);
+                assertEquals(m, readOutput(driver, outputTopic));
             }
         } finally {
             driver.close();
         }
     }
 
-    // public void testCorrelate() {
-    //     StreamsBuilder builder = new StreamsBuilder();
-    //     KStream<String, JsonNode> stream = Topology.createStream(builder);
+    public void testCorrelate() {
+        StreamsBuilder builder = new StreamsBuilder();
+        KStream<String, Message> stream = Topology.createStream(builder);
 
-    //     String storeName = "PT10S-Store";
-    //     Topology.correlate(stream);
+        String storeName = "PT10S-Store";
+        Topology.correlate(Topology.translate(Topology.filterRecognized(stream)));
 
-    //     TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
+        TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
 
-    //     // First Window
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 10010, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 1}")));
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 11000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 2}")));
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 12000, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 3}")));
+        try {
+            sendMessages(driver, testMessages);
 
-    //     // Second Window
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 22000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 4}")));
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 20000, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 5}")));
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 21000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 6}")));
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 21000, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 7}")));
+            KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("85", (1557125670789L - 25000L), (1557125670789L + 100000L));
 
-    //     // Third Window
-    //     driver.pipeInput(createRecord(deserializeJson("{\"time\": 30000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 8}")));
+            try {
+                Message expected = new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; numbers = new int[] { 106, 39, 55 }; } };
+                Message message = (Message)((KeyValue)iterator.next()).value;
+                assert(!iterator.hasNext());
 
-    //     // Fetch all the keys for all time
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetchAll(Long.MIN_VALUE, Long.MAX_VALUE)),
-    //             deserializeJson("[[{\"time\":10010,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":1},{\"time\":11000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":2}]," +
-    //                             "[{\"time\":22000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":4},{\"time\":21000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":6}]," +
-    //                             "[{\"time\":30000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":8}]," +
-    //                             "[{\"time\":12000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":3}]," +
-    //                             "[{\"time\":20000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":5},{\"time\":21000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":7}]]"));
+                assertEquals(expected, message);
+            } finally {
+                iterator.close();
+            }
 
-    //     // Fetch by the English keys for all time
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", Long.MIN_VALUE, Long.MAX_VALUE)),
-    //             deserializeJson("[[{\"time\":10010,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":1},{\"time\":11000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":2}]," +
-    //                             "[{\"time\":22000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":4},{\"time\":21000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":6}]," +
-    //                             "[{\"time\":30000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":8}]]"));
 
-    //     // Fetch by the German keys for all time
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("G-test-german", Long.MIN_VALUE, Long.MAX_VALUE)),
-    //             deserializeJson("[[{\"time\":12000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":3}]," +
-    //                             "[{\"time\":20000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":5},{\"time\":21000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":7}]]"));
-
-    //     // Fetch by the English key for a single window
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", 10000, 20000 - 1)),
-    //             deserializeJson("[[{\"time\":10010,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":1},{\"time\":11000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":2}]]"));
-
-    //     // Fetch from empty windows
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", 0, 10000 - 1)),
-    //             deserializeJson("[]"));
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("G-test-english", 0, 10000 - 1)),
-    //             deserializeJson("[]"));
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("G-test-english", 30000, 40000)),
-    //             deserializeJson("[]"));
-    //     assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", 40000, 50000)),
-    //             deserializeJson("[]"));
-
-    //     driver.close();
-    // }
+        } finally {
+            driver.close();
+        }
+    }
 }

@@ -79,8 +79,17 @@ public class Topology {
                                         };
                                 }
 
-                                aggregation.numbers = new int[aggregation.numbers.length + 1];
-                                aggregation.numbers[aggregation.numbers.length - 1] = value.number;
+                                int[] numbers = new int[aggregation.numbers.length + value.numbers.length];
+
+                                for(int i = 0; i < aggregation.numbers.length; i++) {
+                                    numbers[i] = aggregation.numbers[i];
+                                }
+
+                                for(int i = 0; i < value.numbers.length; i++) {
+                                    numbers[i + aggregation.numbers.length] = value.numbers[i];
+                                }
+
+                                aggregation.numbers = numbers;
 
                                 return aggregation;
                             }
