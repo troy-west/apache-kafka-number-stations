@@ -1,8 +1,5 @@
 package numbers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,10 +65,10 @@ class Translator {
          return numberIndex.get(language).get(number);
     }
 
-    static Integer translateNumbers(String language, ArrayNode numbers) {
+    static Integer translateNumbers(String language, String[] numbers) {
         StringBuilder str = new StringBuilder();
-        for (JsonNode number : numbers) {
-            str.append(Translator.translateNumber(language, number.textValue()));
+        for (String number : numbers) {
+            str.append(Translator.translateNumber(language, number));
         }
         return Integer.parseInt(str.toString());
     }

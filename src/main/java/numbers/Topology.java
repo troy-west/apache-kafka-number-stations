@@ -1,9 +1,5 @@
 package numbers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.*;
@@ -12,9 +8,6 @@ import java.time.Duration;
 import java.util.Properties;
 
 public class Topology {
-
-    private static ObjectMapper mapper = new ObjectMapper();
-
     public static final Properties config = new Properties() {
         {
             put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-default");
@@ -24,7 +17,7 @@ public class Topology {
         }
     };
 
-    public static KStream<String, JsonNode> createStream(StreamsBuilder builder) {
+    public static KStream<String, Message> createStream(StreamsBuilder builder) {
         return builder.stream("radio-logs", Consumed.with(new TimeExtractor()));
     }
 
@@ -32,12 +25,12 @@ public class Topology {
         correlate(translate(filterRecognized(createStream(builder))));
     }
 
-    public static KStream<String, JsonNode> filterRecognized(KStream<String, JsonNode> stream) {
-        return stream.filter(new Predicate<String, JsonNode>() {
+    public static KStream<String, Message> filterRecognized(KStream<String, Message> stream) {
+        return stream.filter(new Predicate<String, Message>() {
             @Override
-            public boolean test(String key, JsonNode value) {
-                if (value.hasNonNull("type")) {
-                    return Translator.numberIndex.containsKey(value.get("type").textValue());
+            public boolean test(String key, Message value) {
+                if (value.type != null) {
+                    return Translator.numberIndex.containsKey(value.type);
                 } else {
                     return false;
                 }
@@ -45,33 +38,51 @@ public class Topology {
         });
     }
 
-    public static KStream<String, JsonNode> translate(KStream<String, JsonNode> stream) {
-        return stream.mapValues(new ValueMapper<JsonNode, JsonNode>() {
+    public static KStream<String, Message> translate(KStream<String, Message> stream) {
+        return stream.mapValues(new ValueMapper<Message, Message>() {
             @Override
-            public JsonNode apply(JsonNode value) {
-                ObjectNode obj = (ObjectNode) value;
-                if (obj.hasNonNull("type") && obj.hasNonNull("value")) {
-                    obj.put("value", Translator.translateNumbers(obj.get("type").textValue(), (ArrayNode) obj.get("value")));
+            public Message apply(Message message) {
+                Message output = new Message();
+
+                if (message.type != null && message.content != null) {
+                    output.number = Translator.translateNumbers(message.type, message.content);
                 }
-                return obj;
+
+                return output;
             }
         });
     }
 
-    public static KTable<Windowed<String>, ArrayNode> correlate(KStream<String, JsonNode> stream) {
+    public static KTable<Windowed<String>, Message> correlate(KStream<String, Message> stream) {
         return stream
                 .groupByKey()
                 .windowedBy(TimeWindows.of(Duration.ofSeconds(10)))
                 .aggregate(
-                        new Initializer<ArrayNode>() {
+                        new Initializer<Message>() {
                             @Override
-                            public ArrayNode apply() {
-                                return mapper.createArrayNode();
+                            public Message apply() {
+                                return null;
                             }
-                        }, new Aggregator<String, JsonNode, ArrayNode>() {
+                        }, new Aggregator<String, Message, Message>() {
                             @Override
-                            public ArrayNode apply(String key, JsonNode value, ArrayNode aggregation) {
-                                return aggregation.add(value);
+                            public Message apply(String key, Message value, Message aggregation) {
+                                if (aggregation == null) {
+                                    aggregation = new Message() {
+                                            {
+                                                time = value.time;
+                                                type = value.type;
+                                                name = value.name;
+                                                longitude = value.longitude;
+                                                lat = value.lat;
+                                                numbers = new int[0];
+                                            }
+                                        };
+                                }
+
+                                aggregation.numbers = new int[aggregation.numbers.length + 1];
+                                aggregation.numbers[aggregation.numbers.length - 1] = value.number;
+
+                                return aggregation;
                             }
                         }, Materialized.as("PT10S-Store"));
     }
