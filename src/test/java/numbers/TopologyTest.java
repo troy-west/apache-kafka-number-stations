@@ -158,6 +158,8 @@ public class TopologyTest extends TestCase {
         try {
             sendMessages(driver, testMessages);
 
+            // Slice data
+
             KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("85", (1557125670789L - 25000L), (1557125670789L + 100000L));
 
             try {
@@ -170,7 +172,15 @@ public class TopologyTest extends TestCase {
                 iterator.close();
             }
 
+            // Fetch from empty windows
 
+            KeyValueIterator iterator2 = driver.getWindowStore("PT10S-Store").fetch("Unknown-Key", 0L, 10000L);
+
+            try {
+                assert(!iterator2.hasNext());
+            } finally {
+                iterator2.close();
+            }
         } finally {
             driver.close();
         }
