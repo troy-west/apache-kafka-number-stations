@@ -1,38 +1,38 @@
 package numbers;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class JsonDeserializer implements Deserializer<JsonNode> {
-    private ObjectMapper objectMapper = new ObjectMapper();
+public class JsonDeserializer<T> implements Deserializer {
 
-    @Override
-    public void configure(Map<String, ?> map, boolean b) {
+    private static final Logger logger = LoggerFactory.getLogger(JsonDeserializer.class);
+    private Class<T> type;
 
+    public JsonDeserializer(Class<T> type) {
+        this.type = type;
     }
 
     @Override
-    public JsonNode deserialize(String s, byte[] bytes) {
-        if (bytes == null)
-            return null;
+    public void configure(Map map, boolean b) {
+    }
 
-        JsonNode data;
+    @Override
+    public T deserialize(String s, byte[] bytes) {
+        ObjectMapper mapper = new ObjectMapper();
+        T obj = null;
         try {
-            data = objectMapper.readTree(bytes);
+            obj = mapper.readValue(bytes, type);
         } catch (Exception e) {
-            throw new SerializationException(e);
+            logger.error("Error deserializing record", e);
         }
-
-        return data;
+        return obj;
     }
 
     @Override
     public void close() {
-
     }
 }

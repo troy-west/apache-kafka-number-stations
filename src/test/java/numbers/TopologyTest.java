@@ -1,8 +1,5 @@
 package numbers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import junit.framework.TestCase;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,26 +12,17 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
 
-import java.util.function.Consumer;
-
 public class TopologyTest extends TestCase {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ConsumerRecordFactory<String, Object> recordFactory =
+            new ConsumerRecordFactory<>("radio-logs", new StringSerializer(), new JsonSerializer());
 
-    private static String inputTopic = "radio-logs";
-    private static ConsumerRecordFactory<String, JsonNode> recordFactory =
-            new ConsumerRecordFactory<>(inputTopic, new StringSerializer(), new JsonSerializer());
-
-    private static JsonNode deserializeJson(String json) {
-        return new JsonDeserializer().deserialize("", json.getBytes());
+    private static ConsumerRecord<byte[], byte[]> createRecord(Message message) {
+        return recordFactory.create("radio-logs", message.getName(), message);
     }
 
-    private static ConsumerRecord<byte[], byte[]> createRecord(JsonNode value) {
-        return recordFactory.create(inputTopic, value.get("name").asText(), value);
-    }
-
-    private static JsonNode readOutput(TopologyTestDriver driver, String topic) {
-        ProducerRecord<String, JsonNode> output = driver.readOutput(topic, new StringDeserializer(), new JsonDeserializer());
+    private static Message readOutput(TopologyTestDriver driver, String topic) {
+        ProducerRecord<String, Message> output = driver.readOutput(topic, new StringDeserializer(), new JsonDeserializer<>(Message.class));
         if (output != null) {
             return output.value();
         } else {
@@ -42,126 +30,107 @@ public class TopologyTest extends TestCase {
         }
     }
 
-    private static ArrayNode getWindowValues(KeyValueIterator iterator) {
-        ArrayNode windowValues = mapper.createArrayNode();
-        iterator.forEachRemaining(new Consumer<KeyValue>() {
-            @Override
-            public void accept(KeyValue o) {
-                windowValues.add((ArrayNode) o.value);
-            }
-        });
-        return windowValues;
+    Message[] testMessages = new Message[]{
+            new Message(1557125670789L, "GER", "085", -92, -30, new String[]{"eins", "null", "sechs"}),
+            new Message(1557125670790L, "UXX", "XRAY"),
+            new Message(1557125670794L, "MOR", "425", 77, 25, new String[]{".....", "----."}),
+            new Message(1557125670795L, "UXX", "XRAY"),
+            new Message(1557125670799L, "ENG", "NZ1", 166, -78, new String[]{"two"}),
+            new Message(1557125670807L, "ENG", "159", -55, -18, new String[]{"three", "five"}),
+            new Message(1557125670812L, "ENG", "426", 78, 26, new String[]{"six", "three"}),
+            new Message(1557125670814L, "GER", "085", -92, -30, new String[]{"drei", "neun"}),
+            new Message(1557125670819L, "MOR", "425", 77, 25, new String[]{".----"}),
+            new Message(1557125670824L, "ENG", "NZ1", 166, -78, new String[]{"two"}),
+            new Message(1557125670827L, "ENG", "324", 27, 9, new String[]{"two", "nine"}),
+            new Message(1557125670829L, "GER", "460", 95, 31, new String[]{"fünf", "sieben"}),
+            new Message(1557125670831L, "GER", "355", 42, 14, new String[]{"sieben"}),
+            new Message(1557125670832L, "ENG", "159", -55, -18, new String[]{"three", "five"}),
+            new Message(1557125670837L, "ENG", "426", 78, 26, new String[]{"one"}),
+            new Message(1557125670839L, "GER", "085", -92, -30, new String[]{"fünf", "fünf"}),
+            new Message(1557125670840L, "GER", "505", 117, 39, new String[]{"eins", "null", "vier"}),
+            new Message(1557125670841L, "GER", "487", 108, 36, new String[]{"eins", "null", "neun"}),
+            new Message(1557125670842L, "MOR", "020", -125, -41, new String[]{"...--"}),
+            new Message(1557125670843L, "GER", "199", -35, -11, new String[]{"eins", "vier"})};
+
+    public void sendMessage(TopologyTestDriver driver, Message message) {
+        driver.pipeInput(createRecord(message));
     }
 
-    public void testFilterRecognized() {
+    public void sendMessages(TopologyTestDriver driver, Message[] messages) {
+        for (Message m : messages) {
+            sendMessage(driver, m);
+        }
+    }
+
+    public void testFilterKnown() {
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, JsonNode> stream = Topology.createStream(builder);
+        KStream<String, Message> stream = Topology.createStream(builder);
 
-        String outputTopic = "output";
-        stream = Topology.filterRecognized(stream);
-        stream.to(outputTopic);
+        stream = Topology.filterKnown(stream);
+        stream.to("output");
 
-        TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
+        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config)) {
+            sendMessages(driver, testMessages);
 
-        JsonNode expected1 = deserializeJson("{\"time\": 10, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": [\"two\", \"five\", \"one\"]}");
-        JsonNode notExpected = deserializeJson("{\"time\": 20, \"name\": \"X-unknown\"}");
-        JsonNode expected2 = deserializeJson("{\"time\": 30, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": [\"eins\", \"null\", \"null\"]}");
+            Message[] expectedMessages = new Message[]{
+                    new Message(1557125670789L, "GER", "085", -92, -30, new String[]{"eins", "null", "sechs"}),
+                    new Message(1557125670794L, "MOR", "425", 77, 25, new String[]{".....", "----."}),
+                    new Message(1557125670799L, "ENG", "NZ1", 166, -78, new String[]{"two"}),
+                    new Message(1557125670807L, "ENG", "159", -55, -18, new String[]{"three", "five"}),
+                    new Message(1557125670812L, "ENG", "426", 78, 26, new String[]{"six", "three"})};
 
-        driver.pipeInput(createRecord(expected1));
-        driver.pipeInput(createRecord(notExpected));
-        driver.pipeInput(createRecord(expected2));
-
-        assertEquals(expected1, readOutput(driver, outputTopic));
-        assertEquals(expected2, readOutput(driver, outputTopic));
-        assertNull(readOutput(driver, outputTopic));
-
-        driver.close();
+            for (Message m : expectedMessages) {
+                assertEquals(m, readOutput(driver, "output"));
+            }
+        }
     }
 
     public void testTranslate() {
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, JsonNode> stream = Topology.createStream(builder);
+        KStream<String, Message> stream = Topology.createStream(builder);
 
-        String outputTopic = "output";
-        stream = Topology.translate(stream);
-        stream.to(outputTopic);
+        stream = Topology.translate(Topology.filterKnown(stream));
+        stream.to("output");
 
-        TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
+        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config)) {
+            sendMessages(driver, testMessages);
 
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 10, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": [\"two\", \"five\", \"one\"]}")));
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 30, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": [\"eins\", \"null\", \"null\"]}")));
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 50, \"type\": \"MOR\", \"name\": \"M-test-morse\", \"value\": [\".----\", \"..---\", \"-----\"]}")));
+            Message[] expectedMessages = new Message[]{
+                    new Message(1557125670789L, "GER", "085", -92, -30, new String[]{"106"}),
+                    new Message(1557125670794L, "MOR", "425", 77, 25, new String[]{"59"}),
+                    new Message(1557125670799L, "ENG", "NZ1", 166, -78, new String[]{"2"}),
+                    new Message(1557125670807L, "ENG", "159", -55, -18, new String[]{"35"}),
+                    new Message(1557125670812L, "ENG", "426", 78, 26, new String[]{"63"})
+            };
 
-        assertEquals(
-                deserializeJson("{\"time\": 10, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 251}"),
-                readOutput(driver, outputTopic));
-        assertEquals(
-                deserializeJson("{\"time\": 30, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 100}"),
-                readOutput(driver, outputTopic));
-        assertEquals(
-                deserializeJson("{\"time\": 50, \"type\": \"MOR\", \"name\": \"M-test-morse\", \"value\": 120}"),
-                readOutput(driver, outputTopic));
-        assertNull(readOutput(driver, outputTopic));
-
-        driver.close();
+            for (Message m : expectedMessages) {
+                assertEquals(m, readOutput(driver, "output"));
+            }
+        }
     }
 
     public void testCorrelate() {
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, JsonNode> stream = Topology.createStream(builder);
+        KStream<String, Message> stream = Topology.createStream(builder);
 
-        String storeName = "PT10S-Store";
-        Topology.correlate(stream);
+        Topology.correlate(Topology.translate(Topology.filterKnown(stream)));
 
-        TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
+        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config)) {
+            sendMessages(driver, testMessages);
 
-        // First Window
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 10010, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 1}")));
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 11000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 2}")));
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 12000, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 3}")));
+            try (KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("085", (1557125670789L - 25000L), (1557125670789L + 100000L))) {
 
-        // Second Window
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 22000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 4}")));
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 20000, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 5}")));
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 21000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 6}")));
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 21000, \"type\": \"GER\", \"name\": \"G-test-german\", \"value\": 7}")));
+                Message expected = new Message(1557125670789L, "GER", "085", -92, -30, new String[]{"106", "39", "55"});
+                Message actual = (Message) ((KeyValue) iterator.next()).value;
 
-        // Third Window
-        driver.pipeInput(createRecord(deserializeJson("{\"time\": 30000, \"type\": \"ENG\", \"name\": \"E-test-english\", \"value\": 8}")));
+                assert (!iterator.hasNext());
+                assertEquals(expected, actual);
+            }
 
-        // Fetch all the keys for all time
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetchAll(Long.MIN_VALUE, Long.MAX_VALUE)),
-                deserializeJson("[[{\"time\":10010,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":1},{\"time\":11000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":2}]," +
-                                "[{\"time\":22000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":4},{\"time\":21000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":6}]," +
-                                "[{\"time\":30000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":8}]," +
-                                "[{\"time\":12000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":3}]," +
-                                "[{\"time\":20000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":5},{\"time\":21000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":7}]]"));
-
-        // Fetch by the English keys for all time
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", Long.MIN_VALUE, Long.MAX_VALUE)),
-                deserializeJson("[[{\"time\":10010,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":1},{\"time\":11000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":2}]," +
-                                "[{\"time\":22000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":4},{\"time\":21000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":6}]," +
-                                "[{\"time\":30000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":8}]]"));
-
-        // Fetch by the German keys for all time
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("G-test-german", Long.MIN_VALUE, Long.MAX_VALUE)),
-                deserializeJson("[[{\"time\":12000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":3}]," +
-                                "[{\"time\":20000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":5},{\"time\":21000,\"type\":\"GER\",\"name\":\"G-test-german\",\"value\":7}]]"));
-
-        // Fetch by the English key for a single window
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", 10000, 20000 - 1)),
-                deserializeJson("[[{\"time\":10010,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":1},{\"time\":11000,\"type\":\"ENG\",\"name\":\"E-test-english\",\"value\":2}]]"));
-
-        // Fetch from empty windows
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", 0, 10000 - 1)),
-                deserializeJson("[]"));
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("G-test-english", 0, 10000 - 1)),
-                deserializeJson("[]"));
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("G-test-english", 30000, 40000)),
-                deserializeJson("[]"));
-        assertEquals(getWindowValues(driver.getWindowStore(storeName).fetch("E-test-english", 40000, 50000)),
-                deserializeJson("[]"));
-
-        driver.close();
+            // Fetch from empty windows
+            try (KeyValueIterator iterator2 = driver.getWindowStore("PT10S-Store").fetch("Unknown-Key", 0L, 10000L)) {
+                assert (!iterator2.hasNext());
+            }
+        }
     }
 }
