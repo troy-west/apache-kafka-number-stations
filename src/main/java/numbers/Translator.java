@@ -70,4 +70,5 @@ class Translator {
 
         return Integer.parseInt(output.toString());
     }
+
 }

@@ -21,7 +21,7 @@ public class JsonDeserializer<T> implements Deserializer {
     }
 
     @Override
-    public Object deserialize(String s, byte[] bytes) {
+    public T deserialize(String s, byte[] bytes) {
         ObjectMapper mapper = new ObjectMapper();
         T obj = null;
         try {

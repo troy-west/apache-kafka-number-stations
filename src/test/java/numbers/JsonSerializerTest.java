@@ -1,17 +1,15 @@
 package numbers;
 
 import junit.framework.TestCase;
-import org.apache.kafka.common.serialization.Serializer;
 
 public class JsonSerializerTest extends TestCase {
 
     public void testSerialize() {
-        Message message = new Message();
-        message.name = "test";
+        Message message = new Message(1557125670789L, "GER", "85", -92, -30, new String[]{"eins", "null", "sechs"});
 
-        Serializer ser = new JsonSerializer();
-        byte[] bytes = ser.serialize("test-topic", message);
-        assertEquals("{\"time\":0,\"name\":\"test\",\"content\":null,\"type\":null,\"longitude\":0,\"latitude\":0,\"number\":null,\"numbers\":null}", new String(bytes));
+        String actual = new String(new JsonSerializer().serialize("test-topic", message));
+        String expected = "{\"time\":1557125670789,\"name\":\"85\",\"type\":\"GER\",\"longitude\":-92,\"latitude\":-30,\"content\":[\"eins\",\"null\",\"sechs\"]}";
+
+        assertEquals(expected, actual);
     }
-
 }

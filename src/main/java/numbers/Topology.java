@@ -10,7 +10,7 @@ import java.util.Properties;
 public class Topology {
     public static final Properties config = new Properties() {
         {
-            put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-default");
+            put(StreamsConfig.APPLICATION_ID_CONFIG, "number-stations-compute");
             put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
             put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, "org.apache.kafka.common.serialization.Serdes$StringSerde");
             put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "numbers.MessageSerde");
@@ -22,34 +22,25 @@ public class Topology {
     }
 
     public static void topology(StreamsBuilder builder) {
-        correlate(translate(filterRecognized(createStream(builder))));
+        correlate(translate(filterKnown(createStream(builder))));
     }
 
-    public static KStream<String, Message> filterRecognized(KStream<String, Message> stream) {
-        return stream.filter(new Predicate<String, Message>() {
-            @Override
-            public boolean test(String key, Message value) {
-                if (value.type != null) {
-                    return Translator.numberIndex.containsKey(value.type);
-                } else {
-                    return false;
-                }
+    public static KStream<String, Message> filterKnown(KStream<String, Message> stream) {
+        return stream.filter((key, message) -> {
+            if (message.getType() != null) {
+                return Translator.numberIndex.containsKey(message.getType());
+            } else {
+                return false;
             }
         });
     }
 
     public static KStream<String, Message> translate(KStream<String, Message> stream) {
-        return stream.mapValues(new ValueMapper<Message, Message>() {
-            @Override
-            public Message apply(Message message) {
-                if (message.type != null && message.content != null) {
-                    message.numbers = new int[] { Translator.translateNumbers(message.type, message.content) };
-                }
-
-                message.content = null;
-
-                return message;
+        return stream.mapValues(message -> {
+            if (message.getType() != null && message.getContent() != null) {
+                message.setContent(new String[]{"" + Translator.translateNumbers(message.getType(), message.getContent())});
             }
+            return message;
         });
     }
 
@@ -58,41 +49,20 @@ public class Topology {
                 .groupByKey()
                 .windowedBy(TimeWindows.of(Duration.ofSeconds(10)))
                 .aggregate(
-                        new Initializer<Message>() {
-                            @Override
-                            public Message apply() {
-                                return null;
+                        () -> null,
+                        (key, message, aggregation) -> {
+                            if (aggregation == null) {
+                                return message;
                             }
-                        }, new Aggregator<String, Message, Message>() {
-                            @Override
-                            public Message apply(String key, Message value, Message aggregation) {
-                                if (aggregation == null) {
-                                    aggregation = new Message() {
-                                            {
-                                                time = value.time;
-                                                type = value.type;
-                                                name = value.name;
-                                                longitude = value.longitude;
-                                                latitude = value.latitude;
-                                                numbers = new int[0];
-                                            }
-                                        };
-                                }
 
-                                int[] numbers = new int[aggregation.numbers.length + value.numbers.length];
+                            String[] aggCurr = new String[aggregation.getContent().length + 1];
+                            System.arraycopy(aggregation.getContent(), 0, aggCurr, 0, aggregation.getContent().length);
+                            aggCurr[aggregation.getContent().length] = message.getContent()[0];
 
-                                for(int i = 0; i < aggregation.numbers.length; i++) {
-                                    numbers[i] = aggregation.numbers[i];
-                                }
+                            Message copy = aggregation.copy();
+                            copy.setContent(aggCurr);
+                            return copy;
 
-                                for(int i = 0; i < value.numbers.length; i++) {
-                                    numbers[i + aggregation.numbers.length] = value.numbers[i];
-                                }
-
-                                aggregation.numbers = numbers;
-
-                                return aggregation;
-                            }
                         }, Materialized.as("PT10S-Store"));
     }
 }
