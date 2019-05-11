@@ -1,14 +1,10 @@
 package numbers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.function.Function;
 
 class Translator {
 
-    private static final HashMap<String, Integer> englishNumbers = new HashMap<>() {
+    static final HashMap<String, Integer> englishNumbers = new HashMap<String, Integer>() {
         {
             put("zero", 0);
             put("one", 1);
@@ -23,7 +19,7 @@ class Translator {
         }
     };
 
-    private static final HashMap<String, Integer> germanNumbers = new HashMap<>() {
+    static final HashMap<String, Integer> germanNumbers = new HashMap<String, Integer>() {
         {
             put("null", 0);
             put("eins", 1);
@@ -38,7 +34,7 @@ class Translator {
         }
     };
 
-    private static final HashMap<String, Integer> morseNumbers = new HashMap<>() {
+    static final HashMap<String, Integer> morseNumbers = new HashMap<String, Integer>() {
         {
             put("-----", 0);
             put(".----", 1);
@@ -53,7 +49,7 @@ class Translator {
         }
     };
 
-    static final HashMap<String, HashMap<String, Integer>> numberIndex = new HashMap<>() {
+    static final HashMap<String, HashMap<String, Integer>> numberIndex = new HashMap<String, HashMap<String, Integer>>() {
         {
             put("ENG", englishNumbers);
             put("GER", germanNumbers);
@@ -62,7 +58,7 @@ class Translator {
     };
 
     private static Integer translateNumber(String language, String number) {
-         return numberIndex.get(language).get(number);
+        return numberIndex.get(language).get(number);
     }
 
     static int translateNumbers(String language, String[] values) {
