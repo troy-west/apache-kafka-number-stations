@@ -40,7 +40,7 @@
                                end   (try (Long/parseLong end)
                                           (catch Exception _ 1557135288803))]
                            (log/info "generating image:" (format "resources/public/generated-%s.png" rand-part))
-                           (image/persist (image/render (map #(or (:content %)
+                           (image/persist (image/render (map #(or (map (fn [s] (Integer/parseInt s)) (:content %))
                                                                   (.numbers %))
                                                              (compute/slice streams)))
                                           rand-part)
