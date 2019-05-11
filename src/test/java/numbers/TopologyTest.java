@@ -119,20 +119,12 @@ public class TopologyTest extends TestCase {
             sendMessages(driver, testMessages);
 
             try (KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("085", (1557125670789L - 25000L), (1557125670789L + 100000L))) {
-                Message expected = new Message() {
-                    {
-                        setTime(1557125670789L);
-                        setType("GER");
-                        setName("085");
-                        setLongitude(-92);
-                        setLatitude(-30);
-                        setContent(new String[]{"106", "39", "55"});
-                    }
-                };
-                Message message = (Message) ((KeyValue) iterator.next()).value;
-                assert (!iterator.hasNext());
 
-                assertEquals(expected, message);
+                Message expected = new Message(1557125670789L, "GER", "085", -92, -30, new String[]{"106", "39", "55"});
+                Message actual = (Message) ((KeyValue) iterator.next()).value;
+
+                assert (!iterator.hasNext());
+                assertEquals(expected, actual);
             }
 
             // Fetch from empty windows
