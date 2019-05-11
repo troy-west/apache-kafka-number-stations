@@ -1,14 +1,18 @@
 # Run App
 
-mvn clean compile exec:java -Dexec.mainClass="numbers.system"
+mvn clean compile exec:java -Dexec.mainClass="numbers.App"
 
 # Run Tests
 
 mvn test
 
+# Sample the radio
+
+mvn compile exec:java -Dexec.mainClass="numbers.JavaRadio"
+
 # Run Producer
 
-mvn compile exec:java -Dexec.mainClass="numbers.radio"
+mvn compile exec:java -Dexec.mainClass="numbers.Producer"
 
 # Building the web app
 
