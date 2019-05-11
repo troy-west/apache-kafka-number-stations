@@ -113,19 +113,12 @@ public class TopologyTest extends TestCase {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Topology.createStream(builder);
 
-        String storeName = "PT10S-Store";
         Topology.correlate(Topology.translate(Topology.filterKnown(stream)));
 
-        TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config);
-
-        try {
+        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config)) {
             sendMessages(driver, testMessages);
 
-            // Slice data
-
-            KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("85", (1557125670789L - 25000L), (1557125670789L + 100000L));
-
-            try {
+            try (KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("85", (1557125670789L - 25000L), (1557125670789L + 100000L))) {
                 Message expected = new Message() {
                     {
                         setTime(1557125670789L);
@@ -140,21 +133,12 @@ public class TopologyTest extends TestCase {
                 assert (!iterator.hasNext());
 
                 assertEquals(expected, message);
-            } finally {
-                iterator.close();
             }
 
             // Fetch from empty windows
-
-            KeyValueIterator iterator2 = driver.getWindowStore("PT10S-Store").fetch("Unknown-Key", 0L, 10000L);
-
-            try {
+            try (KeyValueIterator iterator2 = driver.getWindowStore("PT10S-Store").fetch("Unknown-Key", 0L, 10000L)) {
                 assert (!iterator2.hasNext());
-            } finally {
-                iterator2.close();
             }
-        } finally {
-            driver.close();
         }
     }
 }
