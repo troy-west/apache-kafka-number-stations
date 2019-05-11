@@ -1,6 +1,7 @@
 package numbers;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.StreamsConfig;
 
@@ -12,8 +13,12 @@ public class Producer {
     {
         Properties config = new Properties();
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        KafkaProducer<String, String> producer = new KafkaProducer<>(config, new StringSerializer(), new StringSerializer());
+        KafkaProducer<String, Message> producer = new KafkaProducer<>(config, new StringSerializer(), new JsonSerializer<>());
 
-        System.out.println( "Produce!" );
+        System.out.println( "Produce radio-logs!" );
+        for (Message message: JavaRadio.listen()) {
+            producer.send(new ProducerRecord<>("radio-logs", message.getName(), message));
+        }
+        System.out.println( "Finished producing radio-logs!");
     }
 }

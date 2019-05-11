@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class JsonSerializer implements Serializer<Object> {
+public class JsonSerializer<T> implements Serializer<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonDeserializer.class);
 
@@ -16,7 +16,7 @@ public class JsonSerializer implements Serializer<Object> {
     }
 
     @Override
-    public byte[] serialize(String topic, Object o) {
+    public byte[] serialize(String topic, T o) {
         byte[] retVal = null;
         ObjectMapper objectMapper = new ObjectMapper();
         try {

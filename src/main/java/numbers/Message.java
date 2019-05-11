@@ -1,20 +1,28 @@
 package numbers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 
 public class Message {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger logger = LoggerFactory.getLogger(JsonDeserializer.class);
+
     private long time;
     private String name;
     private String type;
-    private int longitude;
-    private int latitude;
+    private int longitude = 0;
+    private int latitude = 0;
     private String[] content;
 
     public Message() {
     }
 
-    public Message(long time, String type, String name) {
+    public Message(Long time, String type, String name) {
         this.setTime(time);
         this.setName(name);
         this.type = type;
@@ -22,7 +30,7 @@ public class Message {
         this.setLatitude(0);
     }
 
-    public Message(long time, String type, String name, int longitude, int latitude) {
+    public Message(long time, String type, String name, Integer longitude, Integer latitude) {
         this.setTime(time);
         this.setName(name);
         this.setType(type);
@@ -30,7 +38,7 @@ public class Message {
         this.setLatitude(latitude);
     }
 
-    public Message(long time, String type, String name, int longitude, int latitude, String[] content) {
+    public Message(long time, String type, String name, Integer longitude, Integer latitude, String[] content) {
         this.setTime(time);
         this.setName(name);
         this.setType(type);
@@ -55,7 +63,12 @@ public class Message {
     }
 
     public String toString() {
-        return "Message:" + getTime() + ":" + type + ":" + getName() + ":" + getLongitude() + ":" + getLatitude() + ":" + getContent();
+        try {
+            return objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            logger.error("Error serializing record", e);
+            return "";
+        }
     }
 
 
@@ -71,7 +84,7 @@ public class Message {
         return time;
     }
 
-    public void setTime(long time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 
@@ -95,15 +108,15 @@ public class Message {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
-        this.longitude = longitude;
+    public void setLongitude(Integer longitude) {
+        if (longitude != null) this.longitude = longitude;
     }
 
     public int getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
-        this.latitude = latitude;
+    public void setLatitude(Integer latitude) {
+        if (latitude != null) this.latitude = latitude;
     }
 }
