@@ -13,7 +13,7 @@ public class Topology {
             put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-default");
             put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
             put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, "org.apache.kafka.common.serialization.Serdes$StringSerde");
-            put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "numbers.JsonSerde");
+            put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "numbers.MessageSerde");
         }
     };
 
@@ -73,7 +73,7 @@ public class Topology {
                                                 type = value.type;
                                                 name = value.name;
                                                 longitude = value.longitude;
-                                                lat = value.lat;
+                                                latitude = value.latitude;
                                                 numbers = new int[0];
                                             }
                                         };

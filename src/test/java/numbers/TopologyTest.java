@@ -11,22 +11,18 @@ import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
-import org.apache.kafka.streams.state.WindowStore;
-
-import java.util.function.Consumer;
 
 public class TopologyTest extends TestCase {
 
-    private static String inputTopic = "radio-logs";
-    private static ConsumerRecordFactory<String, Message> recordFactory =
-            new ConsumerRecordFactory<>(inputTopic, new StringSerializer(), new JsonSerializer());
+    private static ConsumerRecordFactory<String, Object> recordFactory =
+            new ConsumerRecordFactory<>("radio-logs", new StringSerializer(), new JsonSerializer());
 
     private static ConsumerRecord<byte[], byte[]> createRecord(Message message) {
-        return recordFactory.create(inputTopic, message.name, message);
+        return recordFactory.create("radio-logs", message.name, message);
     }
 
     private static Message readOutput(TopologyTestDriver driver, String topic) {
-        ProducerRecord<String, Message> output = driver.readOutput(topic, new StringDeserializer(), new JsonDeserializer());
+        ProducerRecord<String, Message> output = driver.readOutput(topic, new StringDeserializer(), new JsonDeserializer<>(Message.class));
         if (output != null) {
             return output.value();
         } else {
@@ -35,27 +31,26 @@ public class TopologyTest extends TestCase {
     }
 
     Message[] testMessages = new Message[] {
-        new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "eins", "null", "sechs" }; } },
-        new Message() { { time = 1557125670790L; type = "UXX"; name = "XRAY"; } },
-        new Message() { { time = 1557125670794L; type = "MOR"; name = "425"; longitude = 77; lat = 25; content = new String[] { ".....", "----." }; } },
-        new Message() { { time = 1557125670795L; type = "UXX"; name = "XRAY"; } },
-        new Message() { { time = 1557125670799L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; content = new String[] { "two" }; } },
-        new Message() { { time = 1557125670807L; type = "ENG"; name = "159"; longitude = -55; lat = -18; content = new String[] { "three", "five" }; } },
-        new Message() { { time = 1557125670812L; type = "ENG"; name = "426"; longitude = 78; lat = 26; content = new String[] { "six", "three" }; } },
-        new Message() { { time = 1557125670814L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "drei", "neun" }; } },
-        new Message() { { time = 1557125670819L; type = "MOR"; name = "425"; longitude = 77; lat = 25; content = new String[] { ".----" }; } },
-        new Message() { { time = 1557125670824L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; content = new String[] { "two" }; } },
-        new Message() { { time = 1557125670827L; type = "ENG"; name = "324"; longitude = 27; lat = 9; content = new String[] { "two", "nine" }; } },
-        new Message() { { time = 1557125670829L; type = "GER"; name = "460"; longitude = 95; lat = 31; content = new String[] { "fünf", "sieben" }; } },
-        new Message() { { time = 1557125670831L; type = "GER"; name = "355"; longitude = 42; lat = 14; content = new String[] { "sieben" }; } },
-        new Message() { { time = 1557125670832L; type = "ENG"; name = "159"; longitude = -55; lat = -18; content = new String[] { "three", "five" }; } },
-        new Message() { { time = 1557125670837L; type = "ENG"; name = "426"; longitude = 78; lat = 26; content = new String[] { "one" }; } },
-        new Message() { { time = 1557125670839L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "fünf", "fünf" }; } },
-        new Message() { { time = 1557125670840L; type = "GER"; name = "505"; longitude = 117; lat = 39; content = new String[] { "eins", "null", "vier" }; } },
-        new Message() { { time = 1557125670841L; type = "GER"; name = "487"; longitude = 108; lat = 36; content = new String[] { "eins", "null", "neun" }; } },
-        new Message() { { time = 1557125670842L; type = "MOR"; name = "20"; longitude = -125; lat = -41; content = new String[] { "...--" }; } },
-        new Message() { { time = 1557125670843L; type = "GER"; name = "199"; longitude = -35; lat = -11; content = new String[] { "eins", "vier" }; } }
-    };
+            new Message(1557125670789L, "GER", "85", -92, -30, new String[] { "eins", "null", "sechs" }),
+            new Message(1557125670790L, "UXX", "XRAY"),
+            new Message(1557125670794L, "MOR", "425", 77, 25, new String[] { ".....", "----." }),
+            new Message(1557125670795L, "UXX", "XRAY"),
+            new Message(1557125670799L, "ENG", "NZ1", 166, -78, new String[] { "two" }),
+            new Message(1557125670807L, "ENG", "159", -55, -18, new String[] { "three", "five" }),
+            new Message(1557125670812L, "ENG", "426", 78, 26, new String[] { "six", "three" }),
+            new Message(1557125670814L, "GER", "85", -92, -30, new String[] { "drei", "neun" }),
+            new Message(1557125670819L, "MOR", "425", 77, 25, new String[] { ".----" }),
+            new Message(1557125670824L, "ENG", "NZ1", 166, -78, new String[] { "two" }),
+            new Message(1557125670827L, "ENG", "324", 27, 9, new String[] { "two", "nine" }),
+            new Message(1557125670829L, "GER", "460", 95, 31, new String[] {  "fünf", "sieben"  }),
+            new Message(1557125670831L, "GER", "355", 42, 14, new String[] {  "sieben"  }),
+            new Message(1557125670832L, "ENG", "159", -55, -18, new String[] {  "three", "five"   }),
+            new Message(1557125670837L, "ENG", "426", 78, 26, new String[] { "one"  }),
+            new Message(1557125670839L, "GER", "85", -92, -30, new String[] { "fünf", "fünf" }),
+            new Message(1557125670840L, "GER", "505", 117, 39, new String[] {  "eins", "null", "vier"  }),
+            new Message(1557125670841L, "GER", "487", 108, 36, new String[] { "eins", "null", "neun"  }),
+            new Message(1557125670842L, "MOR", "20", -125, -41, new String[] { "...--"  }),
+            new Message(1557125670843L, "GER", "199", -35, -11, new String[] { "eins", "vier"})};
 
     public void sendMessage(TopologyTestDriver driver, Message message) {
         driver.pipeInput(createRecord(message));
@@ -67,11 +62,7 @@ public class TopologyTest extends TestCase {
         }
     }
 
-    public void assertEqualsJson(Message a, Message b) throws javax.xml.bind.JAXBException {
-        assertEquals(Json.serialize(a), Json.serialize(b));
-    }
-
-    public void testFilterRecognized() throws javax.xml.bind.JAXBException {
+    public void testFilterRecognized() {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Topology.createStream(builder);
 
@@ -85,15 +76,13 @@ public class TopologyTest extends TestCase {
             sendMessages(driver, testMessages);
 
             Message[] expectedMessages = new Message[] {
-                new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; content = new String[] { "eins", "null", "sechs" }; } },
-                new Message() { { time = 1557125670794L; type = "MOR"; name = "425"; longitude = 77; lat = 25; content = new String[] { ".....", "----." }; } },
-                new Message() { { time = 1557125670799L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; content = new String[] { "two" }; } },
-                new Message() { { time = 1557125670807L; type = "ENG"; name = "159"; longitude = -55; lat = -18; content = new String[] { "three", "five" }; } },
-                new Message() { { time = 1557125670812L; type = "ENG"; name = "426"; longitude = 78; lat = 26; content = new String[] { "six", "three" }; } }
-            };
+                    new Message(1557125670789L, "GER", "85", -92, -30, new String[] { "eins", "null", "sechs" }),
+                    new Message(1557125670794L, "MOR", "425", 77, 25, new String[] { ".....", "----." }),
+                    new Message(1557125670799L, "ENG", "NZ1", 166, -78, new String[] { "two" }),
+                    new Message(1557125670807L, "ENG", "159", -55, -18, new String[] { "three", "five" }),
+                    new Message(1557125670812L, "ENG", "426", 78, 26, new String[] { "six", "three" })};
 
             for(Message m: expectedMessages) {
-                System.out.println(Json.serialize(m));
                 assertEquals(m, readOutput(driver, outputTopic));
             }
         } finally {
@@ -101,7 +90,7 @@ public class TopologyTest extends TestCase {
         }
     }
 
-    public void testTranslate() throws javax.xml.bind.JAXBException {
+    public void testTranslate(){
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Topology.createStream(builder);
 
@@ -115,11 +104,11 @@ public class TopologyTest extends TestCase {
             sendMessages(driver, testMessages);
 
             Message[] expectedMessages = new Message[] {
-                new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; numbers = new int[] { 106 }; } },
-                new Message() { { time = 1557125670794L; type = "MOR"; name = "425"; longitude = 77; lat = 25; numbers = new int[] { 59 }; } },
-                new Message() { { time = 1557125670799L; type = "ENG"; name = "NZ1"; longitude = 166; lat = -78; numbers = new int[] { 2 }; } },
-                new Message() { { time = 1557125670807L; type = "ENG"; name = "159"; longitude = -55; lat = -18; numbers = new int[] { 35 }; } },
-                new Message() { { time = 1557125670812L; type = "ENG"; name = "426"; longitude = 78; lat = 26; numbers = new int[] { 63 }; } }
+                new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; latitude = -30; numbers = new int[] { 106 }; } },
+                new Message() { { time = 1557125670794L; type = "MOR"; name = "425"; longitude = 77; latitude = 25; numbers = new int[] { 59 }; } },
+                new Message() { { time = 1557125670799L; type = "ENG"; name = "NZ1"; longitude = 166; latitude = -78; numbers = new int[] { 2 }; } },
+                new Message() { { time = 1557125670807L; type = "ENG"; name = "159"; longitude = -55; latitude = -18; numbers = new int[] { 35 }; } },
+                new Message() { { time = 1557125670812L; type = "ENG"; name = "426"; longitude = 78; latitude = 26; numbers = new int[] { 63 }; } }
             };
 
             for(Message m: expectedMessages) {
@@ -147,7 +136,7 @@ public class TopologyTest extends TestCase {
             KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("85", (1557125670789L - 25000L), (1557125670789L + 100000L));
 
             try {
-                Message expected = new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; lat = -30; numbers = new int[] { 106, 39, 55 }; } };
+                Message expected = new Message() { { time = 1557125670789L; type = "GER"; name = "85"; longitude = -92; latitude = -30; numbers = new int[] { 106, 39, 55 }; } };
                 Message message = (Message)((KeyValue)iterator.next()).value;
                 assert(!iterator.hasNext());
 

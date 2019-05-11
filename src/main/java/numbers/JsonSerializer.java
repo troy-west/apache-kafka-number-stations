@@ -1,30 +1,33 @@
 package numbers;
 
-import org.apache.kafka.common.errors.SerializationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class JsonSerializer implements Serializer<Message> {
-    @Override
-    public void configure(Map<String, ?> map, boolean b) {
+public class JsonSerializer implements Serializer<Object> {
 
+    private static final Logger logger = LoggerFactory.getLogger(JsonDeserializer.class);
+
+    @Override
+    public void configure(Map map, boolean b) {
     }
 
     @Override
-    public byte[] serialize(String s, Message data) {
-        if (data == null)
-            return null;
-
+    public byte[] serialize(String topic, Object o) {
+        byte[] retVal = null;
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return Json.serialize(data).getBytes();
+            retVal = objectMapper.writeValueAsBytes(o);
         } catch (Exception e) {
-            throw new SerializationException("Error serializing JSON message", e);
+            logger.error("Error serializing record", e);
         }
+        return retVal;
     }
 
     @Override
     public void close() {
-
     }
 }
