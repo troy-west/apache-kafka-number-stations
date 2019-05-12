@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.Properties;
 
 public class Compute {
+
     public static final Properties config = new Properties() {
         {
             put(StreamsConfig.APPLICATION_ID_CONFIG, "compute-radio-logs");
@@ -18,7 +19,7 @@ public class Compute {
     };
 
     public static KStream<String, Message> createStream(StreamsBuilder builder) {
-        return builder.stream("radio-logs", Consumed.with(new TimeExtractor()));
+        return builder.stream("radio-logs", Consumed.with(new MessageTimeExtractor()));
     }
 
     public static void topology(StreamsBuilder builder) {
