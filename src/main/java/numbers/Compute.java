@@ -2,12 +2,18 @@ package numbers;
 
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Properties;
 
 public class Compute {
+
+    private static final Logger logger = LoggerFactory.getLogger(Compute.class);
 
     public static final Properties config = new Properties() {
         {
@@ -22,26 +28,25 @@ public class Compute {
         return builder.stream("radio-logs", Consumed.with(new MessageTimeExtractor()));
     }
 
-    public static void topology(StreamsBuilder builder) {
-        correlate(translate(filterKnown(createStream(builder))));
+    public static KStream<String, Message> filterKnown(KStream<String, Message> stream) {
+        return stream.filter((key, message) -> Translator.knows(message));
     }
 
-    public static KStream<String, Message> filterKnown(KStream<String, Message> stream) {
-        return stream.filter((key, message) -> {
-            if (message.getType() != null) {
-                return Translator.numberIndex.containsKey(message.getType());
-            } else {
-                return false;
-            }
-        });
+
+    public static KStream<String, Message>[] branchSpecial(KStream<String, Message> stream) {
+        return stream.branch(
+                (key, message) -> message.getLatitude() >= -75,
+                (key, message) -> message.getLatitude() < -75);
+    }
+
+    public static void logScottBase(KStream<String, Message> stream) {
+        stream.foreach((key, message) -> logger.info(String.format("SB %s %s", key, message)));
     }
 
     public static KStream<String, Message> translate(KStream<String, Message> stream) {
         return stream.mapValues(message -> {
-            if (message.getType() != null && message.getContent() != null) {
-                message.setContent(new String[]{"" + Translator.translateNumbers(message.getType(), message.getContent())});
-            }
-            return message;
+            String translated = Translator.translate(message.getType(), message.getContent());
+            return message.copy().resetContent(List.of(translated));
         });
     }
 
@@ -52,18 +57,26 @@ public class Compute {
                 .aggregate(
                         () -> null,
                         (key, message, aggregation) -> {
+
                             if (aggregation == null) {
                                 return message;
                             }
 
-                            String[] aggCurr = new String[aggregation.getContent().length + 1];
-                            System.arraycopy(aggregation.getContent(), 0, aggCurr, 0, aggregation.getContent().length);
-                            aggCurr[aggregation.getContent().length] = message.getContent()[0];
+                            return aggregation.copy().addContent(message.getContent());
 
-                            Message copy = aggregation.copy();
-                            copy.setContent(aggCurr);
-                            return copy;
-
-                        }, Materialized.as("PT10S-Store"));
+                        },
+                        Materialized.as("PT10S-Store"));
     }
+
+    public static Topology topology(StreamsBuilder builder) {
+        KStream<String, Message> stream = createStream(builder);
+        KStream<String, Message> filtered = filterKnown(stream);
+        KStream<String, Message>[] branched = branchSpecial(filtered);
+        KStream<String, Message> translated = translate(branched[0]);
+        logScottBase(branched[1]);
+        correlate(translated);
+
+        return builder.build();
+    }
+
 }

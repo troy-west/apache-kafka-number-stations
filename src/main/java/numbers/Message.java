@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Message {
@@ -17,38 +19,64 @@ public class Message {
     private String type;
     private int longitude = 0;
     private int latitude = 0;
-    private String[] content;
+    private List<String> content;
 
     public Message() {
     }
 
     public Message(Long time, String type, String name) {
-        this.setTime(time);
-        this.setName(name);
+        this.time = time;
+        this.name = name;
         this.type = type;
-        this.setLongitude(0);
-        this.setLatitude(0);
+        this.longitude = 0;
+        this.latitude = 0;
     }
 
-    public Message(long time, String type, String name, Integer longitude, Integer latitude) {
-        this.setTime(time);
-        this.setName(name);
-        this.setType(type);
-        this.setLongitude(longitude);
-        this.setLatitude(latitude);
+    public Message(long time, String type, String name, Integer longitude, Integer latitude, List<String> content) {
+        this.time = time;
+        this.name = name;
+        this.type = type;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.content = content;
     }
 
-    public Message(long time, String type, String name, Integer longitude, Integer latitude, String[] content) {
-        this.setTime(time);
-        this.setName(name);
-        this.setType(type);
-        this.setLongitude(longitude);
-        this.setLatitude(latitude);
-        this.setContent(content);
+    public String getType() {
+        return type;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<String> getContent() {
+        return content;
+    }
+
+    public int getLongitude() {
+        return longitude;
+    }
+
+    public int getLatitude() {
+        return latitude;
     }
 
     public Message copy() {
-        return new Message(this.getTime(), getType(), this.getName(), this.getLongitude(), this.getLatitude());
+        return new Message(this.getTime(), this.getType(), this.getName(), this.getLongitude(), this.getLatitude(), new ArrayList<>(this.content));
+    }
+
+    public Message resetContent(List<String> newContent) {
+        this.content = newContent;
+        return this;
+    }
+
+    public Message addContent(List<String> newContent) {
+        this.content.addAll(newContent);
+        return this;
     }
 
     public boolean equals(Object o) {
@@ -70,53 +98,5 @@ public class Message {
             return "";
         }
     }
-
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(Long time) {
-        this.time = time;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String[] getContent() {
-        return content;
-    }
-
-    public void setContent(String[] content) {
-        this.content = content;
-    }
-
-    public int getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Integer longitude) {
-        if (longitude != null) this.longitude = longitude;
-    }
-
-    public int getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Integer latitude) {
-        if (latitude != null) this.latitude = latitude;
-    }
 }
+
