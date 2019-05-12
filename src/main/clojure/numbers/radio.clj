@@ -1,8 +1,8 @@
 (ns numbers.radio
   (:require [numbers.image :as image]
             [numbers.kafka :as kafka])
-  (:import (org.apache.kafka.clients.producer ProducerRecord KafkaProducer)
-           (numbers Message))
+  (:import (numbers Message)
+           (org.apache.kafka.clients.producer ProducerRecord KafkaProducer))
   (:gen-class))
 
 (defn listen
@@ -31,7 +31,7 @@
   (produce))
 
 (defn ->Message [{:keys [time type name long lat content]}]
-  (Message. time type name long lat (into-array String content)))
+      (Message. time type name long lat content))
 
 (defn java-listen []
   (map ->Message (listen)))

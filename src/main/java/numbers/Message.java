@@ -36,8 +36,10 @@ public class Message {
         this.time = time;
         this.name = name;
         this.type = type;
-        this.longitude = longitude;
-        this.latitude = latitude;
+        if (longitude != null)
+            this.longitude = longitude;
+        if (latitude != null)
+            this.latitude = latitude;
         this.content = content;
     }
 
