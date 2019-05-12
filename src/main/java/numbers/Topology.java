@@ -10,7 +10,7 @@ import java.util.Properties;
 public class Topology {
     public static final Properties config = new Properties() {
         {
-            put(StreamsConfig.APPLICATION_ID_CONFIG, "number-stations-compute");
+            put(StreamsConfig.APPLICATION_ID_CONFIG, "compute-radio-logs");
             put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
             put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, "org.apache.kafka.common.serialization.Serdes$StringSerde");
             put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "numbers.MessageSerde");

@@ -10,3 +10,4 @@ pom.xml.asc
 .idea
 .DS_Store
 *.iml
+resources/public/generated-*

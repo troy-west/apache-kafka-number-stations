@@ -9,16 +9,19 @@ import java.util.Properties;
 
 public class Producer {
 
-    public static void main( String[] args )
-    {
+    public static void main(String[] args) {
+
+        System.out.println("Produce to radio-logs topic!");
+
         Properties config = new Properties();
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        KafkaProducer<String, Message> producer = new KafkaProducer<>(config, new StringSerializer(), new JsonSerializer<>());
 
-        System.out.println( "Produce radio-logs!" );
-        for (Message message: JavaRadio.listen()) {
+        KafkaProducer<String, Message> producer = new KafkaProducer<>(config, new StringSerializer(), new JsonSerializer<>());
+        for (Message message : JavaRadio.listen()) {
             producer.send(new ProducerRecord<>("radio-logs", message.getName(), message));
         }
-        System.out.println( "Finished producing radio-logs!");
+        producer.close();
+
+        System.out.println("Finished producing to radio-logs topic!");
     }
 }
