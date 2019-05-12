@@ -134,7 +134,7 @@ As you progress through this project you can always reset the consumer offets li
 ./bin/kafka-consumer-groups.sh --bootstrap-server kafka-1:19092 --group compute-radio-logs --reset-offsets --to-earliest --execute --topic radio-logs
 ```
 
-# Parallelism our Compute
+# Parallelising our Compute
 
 What happens when you run more than one application (say on ports 8081, 8082, 8083), and why?
 
