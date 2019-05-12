@@ -65,7 +65,7 @@ Topic:radio-logs	PartitionCount:12	ReplicationFactor:3	Configs:
 Take a look at the data in each partition (currently empty)
 
 ```
-./bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list kafka-1:19092 --topic x-topic --time -1
+./bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list kafka-1:19092 --topic radio-logs --time -1
 
 radio-logs:0:0
 radio-logs:1:0
