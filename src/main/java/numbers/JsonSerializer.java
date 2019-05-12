@@ -19,11 +19,9 @@ public class JsonSerializer<T> implements Serializer<T> {
     public byte[] serialize(String topic, T o) {
         byte[] retVal = null;
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            retVal = objectMapper.writeValueAsBytes(o);
-        } catch (Exception e) {
-            logger.error("Error serializing record", e);
-        }
+
+        // TODO: Implement me. Use the object mapper to turn types into bytes
+
         return retVal;
     }
 

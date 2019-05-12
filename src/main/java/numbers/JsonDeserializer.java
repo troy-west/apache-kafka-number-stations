@@ -23,13 +23,10 @@ public class JsonDeserializer<T> implements Deserializer {
     @Override
     public T deserialize(String s, byte[] bytes) {
         ObjectMapper mapper = new ObjectMapper();
-        T obj = null;
-        try {
-            obj = mapper.readValue(bytes, type);
-        } catch (Exception e) {
-            logger.error("Error deserializing record", e);
-        }
-        return obj;
+
+        // TODO: Implement Me. Use the ObjectMapper to deserialize bytes into types
+
+        return null;
     }
 
     @Override
