@@ -7,7 +7,7 @@ import org.apache.kafka.streams.kstream.*;
 import java.time.Duration;
 import java.util.Properties;
 
-public class Topology {
+public class Compute {
     public static final Properties config = new Properties() {
         {
             put(StreamsConfig.APPLICATION_ID_CONFIG, "compute-radio-logs");

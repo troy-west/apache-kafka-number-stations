@@ -12,7 +12,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
 
-public class TopologyTest extends TestCase {
+public class ComputeTest extends TestCase {
 
     private static ConsumerRecordFactory<String, Object> recordFactory =
             new ConsumerRecordFactory<>("radio-logs", new StringSerializer(), new JsonSerializer());
@@ -64,12 +64,12 @@ public class TopologyTest extends TestCase {
 
     public void testFilterKnown() {
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, Message> stream = Topology.createStream(builder);
+        KStream<String, Message> stream = Compute.createStream(builder);
 
-        stream = Topology.filterKnown(stream);
+        stream = Compute.filterKnown(stream);
         stream.to("output");
 
-        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config)) {
+        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Compute.config)) {
             sendMessages(driver, testMessages);
 
             Message[] expectedMessages = new Message[]{
@@ -87,12 +87,12 @@ public class TopologyTest extends TestCase {
 
     public void testTranslate() {
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, Message> stream = Topology.createStream(builder);
+        KStream<String, Message> stream = Compute.createStream(builder);
 
-        stream = Topology.translate(Topology.filterKnown(stream));
+        stream = Compute.translate(Compute.filterKnown(stream));
         stream.to("output");
 
-        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config)) {
+        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Compute.config)) {
             sendMessages(driver, testMessages);
 
             Message[] expectedMessages = new Message[]{
@@ -111,11 +111,11 @@ public class TopologyTest extends TestCase {
 
     public void testCorrelate() {
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, Message> stream = Topology.createStream(builder);
+        KStream<String, Message> stream = Compute.createStream(builder);
 
-        Topology.correlate(Topology.translate(Topology.filterKnown(stream)));
+        Compute.correlate(Compute.translate(Compute.filterKnown(stream)));
 
-        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Topology.config)) {
+        try (TopologyTestDriver driver = new TopologyTestDriver(builder.build(), Compute.config)) {
             sendMessages(driver, testMessages);
 
             try (KeyValueIterator iterator = driver.getWindowStore("PT10S-Store").fetch("085", (1557125670789L - 25000L), (1557125670789L + 100000L))) {

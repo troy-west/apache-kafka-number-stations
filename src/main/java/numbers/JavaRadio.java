@@ -20,15 +20,14 @@ public class JavaRadio {
         IFn sample = Clojure.var("numbers.radio", "java-sample");
         List<Message> messages = (List<Message>) sample.invoke();
         System.out.println();
-        for (Message message: messages) {
+        for (Message message : messages) {
             System.out.println(message);
         }
         return messages;
     }
 
-    public static void main( String[] args )
-    {
-      sample();
+    public static void main(String[] args) {
+        sample();
     }
 
 }
