@@ -2,13 +2,12 @@ package numbers;
 
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Windowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.util.List;
 import java.util.Properties;
 
 public class Compute {
@@ -25,47 +24,33 @@ public class Compute {
     };
 
     public static KStream<String, Message> createStream(StreamsBuilder builder) {
-        return builder.stream("radio-logs", Consumed.with(new MessageTimeExtractor()));
+        // TODO: Implement me. Create a new stream with a MessageTimeExtractor for timestamps
+        return null;
     }
 
     public static KStream<String, Message> filterKnown(KStream<String, Message> stream) {
-        return stream.filter((key, message) -> Translator.knows(message));
+        // TODO: Implement me. Filter only messages where Translator.knows(message)
+        return null;
     }
 
 
     public static KStream<String, Message>[] branchSpecial(KStream<String, Message> stream) {
-        return stream.branch(
-                (key, message) -> message.getLatitude() >= -75,
-                (key, message) -> message.getLatitude() < -75);
+        // TODO: Implement me. Split the stream in two. All messages above -75 latitude, and those below (Scott Base)
+        return null;
     }
 
     public static void logScottBase(KStream<String, Message> stream) {
-        stream.foreach((key, message) -> logger.info(String.format("SB %s %s", key, message)));
+        // TODO: Implement me. Log/info each Scott Base Message
     }
 
     public static KStream<String, Message> translate(KStream<String, Message> stream) {
-        return stream.mapValues(message -> {
-            String translated = Translator.translate(message.getType(), message.getContent());
-            return message.copy().resetContent(List.of(translated));
-        });
+        // TODO: Implement me. Translate content from text to numeric
+        return null;
     }
 
     public static KTable<Windowed<String>, Message> correlate(KStream<String, Message> stream) {
-        return stream
-                .groupByKey()
-                .windowedBy(TimeWindows.of(Duration.ofSeconds(10)))
-                .aggregate(
-                        () -> null,
-                        (key, message, aggregation) -> {
-
-                            if (aggregation == null) {
-                                return message;
-                            }
-
-                            return aggregation.copy().addContent(message.getContent());
-
-                        },
-                        Materialized.as("PT10S-Store"));
+        // TODO: Implement me. Correlate all messages by station name in tumbling 10 second windows
+        return null;
     }
 
     public static void topology(StreamsBuilder builder) {
