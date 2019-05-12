@@ -17,7 +17,7 @@ public class Producer {
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 
         KafkaProducer<String, Message> producer = new KafkaProducer<>(config, new StringSerializer(), new JsonSerializer<>());
-        for (Message message : JavaRadio.listen()) {
+        for (Message message : SecretRadio.listen()) {
             producer.send(new ProducerRecord<>("radio-logs", message.getName(), message));
         }
         producer.close();

@@ -5,7 +5,7 @@ import clojure.lang.IFn;
 
 import java.util.List;
 
-public class JavaRadio {
+public class SecretRadio {
 
     static List<Message> listen() {
         IFn require = Clojure.var("clojure.core", "require");
