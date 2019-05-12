@@ -84,14 +84,16 @@
           (drop 2 readings))))                              ;; remove drop 2 for duplicates
 
 (defn render
-  [pixels]
-  (let [img       (BufferedImage. 960 540 BufferedImage/TYPE_INT_ARGB)
-        dst-array (.getData (.getDataBuffer (.getRaster img)))
-        src-array (int-array (map (fn [[r g b]]
-                                    (.getRGB (Color. ^int (or r 0) ^int (or g 0) ^int (or b 0) 255)))
-                                  pixels))]
-    (System/arraycopy src-array 0 dst-array 0 (alength src-array))
-    img))
+  ([pixels]
+   (render pixels 960 540))
+  ([pixels width height]
+   (let [img       (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
+         dst-array (.getData (.getDataBuffer (.getRaster img)))
+         src-array (int-array (map (fn [[r g b]]
+                                     (.getRGB (Color. ^int (or r 0) ^int (or g 0) ^int (or b 0) 255)))
+                                   pixels))]
+     (System/arraycopy src-array 0 dst-array 0 (alength src-array))
+     img)))
 
 (defn persist
   ([img]

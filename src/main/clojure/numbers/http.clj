@@ -41,8 +41,7 @@
                                end   (try (Long/parseLong end)
                                           (catch Exception _ 1557135288803))]
                            (log/info "generating image:" (format "resources/public/generated-%s.png" rand-part))
-                           (image/persist (image/render (map #(map (fn [s] (Integer/parseInt s)) (.getContent %))
-                                                             (compute/slice streams "PT10S-Store" (radio/stations) start end)))
+                           (image/persist (apply image/render (compute/slice streams "PT10S-Store" (radio/stations) start end))
                                           rand-part)
                            {:body   (index start end)
                             :status 200})))}})
