@@ -119,7 +119,7 @@ Then:
 * Send the full ```(radio/listen)``` data to your local Kafka Cluster
 * Complete the compute tests using the TopologyTestRunner
 * Build the application and run it against local Kafka
-* See the decoded message!
+* See the decoded message at localhost:8080!
 
 Once the compute tests are complete, you can build and run the application like so:
 
