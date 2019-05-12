@@ -68,15 +68,13 @@ public class Compute {
                         Materialized.as("PT10S-Store"));
     }
 
-    public static Topology topology(StreamsBuilder builder) {
+    public static void topology(StreamsBuilder builder) {
         KStream<String, Message> stream = createStream(builder);
         KStream<String, Message> filtered = filterKnown(stream);
         KStream<String, Message>[] branched = branchSpecial(filtered);
         KStream<String, Message> translated = translate(branched[0]);
         logScottBase(branched[1]);
         correlate(translated);
-
-        return builder.build();
     }
 
 }
