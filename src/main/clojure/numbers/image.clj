@@ -28,8 +28,8 @@
   {:time    time
    :type    type
    :name    name
-   :long    long
-   :lat     lat
+   :long    (int long)
+   :lat     (int lat)
    :content content})
 
 (defn scott-base

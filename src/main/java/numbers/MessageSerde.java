@@ -18,7 +18,7 @@ public class MessageSerde implements Serde {
 
     @Override
     public Serializer serializer() {
-        return new JsonSerializer();
+        return new JsonSerializer<Message>();
     }
 
     @Override
