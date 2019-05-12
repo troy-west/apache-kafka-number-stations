@@ -8,7 +8,8 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.file :refer [wrap-file]]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [numbers.radio :as radio]))
 
 (defn index
   [start end]
@@ -40,9 +41,8 @@
                                end   (try (Long/parseLong end)
                                           (catch Exception _ 1557135288803))]
                            (log/info "generating image:" (format "resources/public/generated-%s.png" rand-part))
-                           (image/persist (image/render (map #(or (map (fn [s] (Integer/parseInt s)) (:content %))
-                                                                  (.numbers %))
-                                                             (compute/slice streams)))
+                           (image/persist (image/render (map #(map (fn [s] (Integer/parseInt s)) (.getContent %))
+                                                             (compute/slice streams "PT10S-Store" (radio/stations) start end)))
                                           rand-part)
                            {:body   (index start end)
                             :status 200})))}})
