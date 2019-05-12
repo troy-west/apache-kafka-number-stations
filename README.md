@@ -8,7 +8,7 @@ We have captured a mysterious ~3hr broadcast of global Number Station data.
 
 In raw form it is 1.5M messages in different languages.
 
-Can we filter it, translate it, correlate it, and decode the hidden message?
+Can we filter it, branch it, translate it, correlate it, and decode the hidden message?
 
 # Initialize Kafka + Kakfa Tools
 
@@ -62,7 +62,7 @@ Topic:radio-logs	PartitionCount:12	ReplicationFactor:3	Configs:
 	Topic: radio-logs	Partition: 11	Leader: 2	Replicas: 2,3,1	Isr: 2,3,1
 ```
 
-Take a look at the data in each partition (currently empty)
+Take a look at the data in each partition (initially empty)
 
 ```
 ./bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list kafka-1:19092 --topic radio-logs --time -1
@@ -80,6 +80,34 @@ radio-logs:9:0
 radio-logs:10:0
 radio-logs:11:0
 ```
+
+# Decoding the secret message, part by part.
+
+At any time, run all the project tests with ```mvn test```
+
+# 1. Sample the radio
+
+Take a look at the sort of messages we are working with
+
+mvn compile exec:java -Dexec.mainClass="numbers.SecretRadio"
+
+# 2. Implement the JSON Serializer / Deserializer
+
+Get numbers.JsonDeserializerTest and numbers.JsonSerializerTest working so that we can produce messages to radio-logs.
+
+# 3. Implement Producer.main
+
+Send each message returned by SecretRadio.listen() to the radio-logs topic
+
+# 4. Complete the Compute toplogy by fixing every test in ComputeTest
+
+Also remember to log/info each Scott Base message (there's no test for that)
+
+# 5. When all the tests are passing, run the application against your local Kafka Cluster
+
+mvn clean compile exec:java -Dexec.mainClass="numbers.App"
+
+Navigate to localhost:8080 to inspect the decoded message!
 
 While the logs are being computed you can check on progress by looking at the offsets of the consumer group
 
@@ -106,56 +134,17 @@ As you progress through this project you can always reset the consumer offets li
 ./bin/kafka-consumer-groups.sh --bootstrap-server kafka-1:19092 --group compute-radio-logs --reset-offsets --to-earliest --execute --topic radio-logs
 ```
 
-Now, from within this project:
-
-Take a look at the Number Station data
-
-```
-(radio/sample)
-```
-
-Then:
-
-* Send the full ```(radio/listen)``` data to your local Kafka Cluster
-* Complete the compute tests using the TopologyTestRunner
-* Build the application and run it against local Kafka
-* See the decoded message at localhost:8080!
-
-Once the compute tests are complete, you can build and run the application like so:
-
-```
-lein uberjar
-```
-
-then
-
-```
-java -jar target/number-stations-0.1.0-SNAPSHOT-standalone.jar 8082 &
-```
+# Parallelism our Compute
 
 What happens when you run more than one application (say on ports 8081, 8082, 8083), and why?
 
-# Run App
-
-mvn clean compile exec:java -Dexec.mainClass="numbers.App"
-
-# Run Tests
-
-mvn test
-
-# Sample the radio
-
-mvn compile exec:java -Dexec.mainClass="numbers.JavaRadio"
-
-# Run Producer
-
-mvn compile exec:java -Dexec.mainClass="numbers.Producer"
-
-# Building the web app
+# Build the app JAR
 
 mvn clean compile package
 
-# Running the web app
+# Run multiple versions of the app at once on different ports
 
 java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8080 &
 java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8081 &
+
+It's a case for interactive queries!
