@@ -73,6 +73,7 @@
         </executions>
       </plugin>
       <plugin>
+        <version>3.8.1</version>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
