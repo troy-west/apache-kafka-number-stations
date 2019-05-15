@@ -10,7 +10,33 @@ In raw form it is 1.5M messages in different languages.
 
 Can we filter it, branch it, translate it, correlate it, and decode the hidden message?
 
-# Initialize Kafka + Kakfa Tools
+# Troubleshooting
+
+## Downloading Oracle Java JDK
+
+1. Visit https://www.oracle.com/technetwork/java/javase/downloads/index.html
+2. Download Java SE 11 or above
+
+If you are asked to log in, try downloading one of the newer versions, then you may not need to log in.
+
+## Windows
+
+1. For any of the "mvn" commands below, run the shell snippets from "cmd.exe" rather than PowerShell.
+If you are inside a PowerShell terminal, run "cmd" to get to a simple shell.
+
+2. If you are having problems with docker similar to the following error messages, try restarting docker:
+
+```
+driver failed programming external connectivity on endpoint
+```
+
+or,
+
+```
+input/output error
+```
+
+# initialize Kafka + Kakfa Tools
 
 Using [troy-west/apache-kafka-cli-tools](https://github.com/troy-west/apache-kafka-cli-tools)
 
