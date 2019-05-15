@@ -162,12 +162,12 @@ If you are asked to log in, try downloading one of the newer versions, then you 
 
 ### Maven
 
-1. For any of the "mvn" commands below, run the shell snippets from "cmd.exe" rather than PowerShell.
+For any of the "mvn" commands below, run the shell snippets from "cmd.exe" rather than PowerShell.
 If you are inside a PowerShell terminal, run "cmd" to get to a simple shell.
 
 ### Docker
 
-2. If you are having problems with docker similar to the following error messages, try restarting docker:
+If you are having problems with docker similar to the following error messages, try restarting docker:
 
 ```
 driver failed programming external connectivity on endpoint
