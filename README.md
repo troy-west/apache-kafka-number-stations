@@ -119,7 +119,7 @@ At any time, run all the project tests with ```mvn test```
 
 # Examine the Data
 
-## 1. Sample the radio
+## Sample the radio
 
 Take a look at a sample of twenty intercepted messages:
 
@@ -154,10 +154,16 @@ Produces content similar to:
 
 We have messages of type English, German, and Morse Code. There are also some spurious of type 'UXX'.
 
+# Produce Secret Radio Data to Kafka
 
-## 2. Implement the JSON Serializer / Deserializer
+## Implement the JSON Serializer / Deserializer
 
-Get numbers.JsonDeserializerTest and numbers.JsonSerializerTest working so that we can produce messages to radio-logs.
+In order to create a producer that sends Message objects to Kafka, first we create the Serializer and Deserializer classes, it's also worth having a quick look at the MessageSerde class which uses both.
+
+* Get numbers.JsonDeserializerTest passing 
+* Get numbers.JsonSerializerTest passing
+
+Do we throw or swallow exceptions in the serialization classes, and why?
 
 ## 3. Implement Producer.main
 

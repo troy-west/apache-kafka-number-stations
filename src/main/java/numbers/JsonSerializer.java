@@ -10,6 +10,7 @@ import java.util.Map;
 public class JsonSerializer<T> implements Serializer<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonDeserializer.class);
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void configure(Map map, boolean b) {
@@ -18,9 +19,9 @@ public class JsonSerializer<T> implements Serializer<T> {
     @Override
     public byte[] serialize(String topic, T o) {
         byte[] retVal = null;
-        ObjectMapper objectMapper = new ObjectMapper();
 
         // TODO: Implement me. Use the object mapper to turn types into bytes
+        // TODO: Question - what's the preferred action when a serialization exception occurs, and why?
 
         return retVal;
     }
