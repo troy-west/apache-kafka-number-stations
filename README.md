@@ -218,11 +218,17 @@ Make sure the KTable that results from the aggregation is materialized as 'PT10S
  
 * Get numbers.ComputeTest.testCorrelate passing
 
-## 5. When all the tests are passing, run the application against your local Kafka Cluster
+## When the Tests Pass
 
+You have implemented the Kafka Streams Topology described in the streaming compute presentation slides
+
+You can run that topology against your local cluster:
+
+```bash
 mvn clean compile exec:java -Dexec.mainClass="numbers.App"
+```
 
-Navigate to localhost:8080 to inspect the decoded message!
+Navigate to localhost:8080 to inspect the decoded message! It may take a minute or two to process.
 
 While the logs are being computed you can check on progress by looking at the offsets of the consumer group
 
@@ -249,7 +255,7 @@ As you progress through this project you can always reset the consumer offets li
 ./bin/kafka-consumer-groups.sh --bootstrap-server kafka-1:19092 --group compute-radio-logs --reset-offsets --to-earliest --execute --topic radio-logs
 ```
 
-## Parallelising our Compute
+# Parallelising our Compute
 
 What happens when you run more than one application (say on ports 8081, 8082, 8083), and why?
 
