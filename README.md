@@ -189,7 +189,7 @@ Use ```streams.filter(...)``` and ```Translator.knows(Message message)``` to fil
 
 * Get numbers.ComputeTest.testFilterKnown passing
 
-## Branch Scott Base
+## Branch Scott Base / Rest of the World
 
 We are told that Scott Base is a special station that should be considered independently.
 
