@@ -181,6 +181,14 @@ We want our messages to be interpreted at the time they declare in the :time fie
 
 Why should you never return a static number (like 0L) from the extractor? Does it impact compaction, deletion, etc?
 
+## Filter Known Messages
+
+We provide a Translator class that can decode individual messages from German, English, and Morse Code into numeric.
+
+Use ```Java Translator.knows(Message message)``` to filter out unknown messages.
+
+In order to do this, we use the stream.filter(...) Kafka Streams functionality.
+
 ## Complete the Compute toplogy by fixing every test in ComputeTest
 
 Also remember to log/info each Scott Base message (there's no test for that)
