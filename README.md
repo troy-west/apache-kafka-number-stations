@@ -167,7 +167,7 @@ Do we throw or swallow exceptions in the serialization classes, and why?
 
 ## Implement Producer.main
 
-Create a new KafkaProducer with the correct serializer, and send each message returned by SecretRadio.listen() to the radio-logs topic.
+Create a new KafkaProducer and send each message returned by SecretRadio.listen() to the radio-logs topic.
 
 What happens if you don't close the Producer and allow the JVM to exit immediately?
 
