@@ -269,3 +269,16 @@ java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-depende
 java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8081 &
 
 It's a case for interactive queries!
+
+# An Extension
+
+The decoded image doesn't quite match the source (src/main/resources/source.png).
+
+That's because Scott Base is special. It broadcasts a rotation factor for each time window, e.g.
+
+* 0 - don't rotate any of the three numbers.
+* 1 - rotate each number left one.
+* 2 - rotate each number left two.
+
+If we use Scott Base as a further cipher we could aggregate that cipher to a different ktable, then join the stream
+of correlated messages with that, rotating where appropriate. This is left up to the adventurous (and may require dropping into the Processor API)
