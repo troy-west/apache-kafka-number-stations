@@ -1,16 +1,18 @@
 # Apache Kafka Three Ways: Number Stations
 
-Use in unison with the TW AK3W Workshop: https://kafka.troywest.com
+A practical programming exercise that introduces the TestTopologyDriver to test-drive the build of a streaming compute application.
+
+Use in unison with [TW AK3W Workshop](https://github.com/troy-west/apache-kafka-three-ways).
 
 # Background
 
-We have captured a mysterious ~3hr broadcast of global Number Station data.
+[Number Stations](https://en.wikipedia.org/wiki/Numbers_station) are shortwave radio stations that broadcast formatted numbers, which are believed to be addressed to intelligence officers operating in foreign countries.
 
-In raw form it is 1.5M messages in different languages.
+We created a radio that captured ~3hrs of mysterious global Number Station broadcasts. These take the shape of 1.5M messages from 541 Number Stations world wide. The radio also captured some spurious broadcast messages of no interest.
 
-Can we filter it, branch it, translate it, correlate it, and decode the hidden message?
+Can we filter, branch, translate, group, window, and aggregate these messages to decode the hidden message?
 
-# initialize Kafka + Kakfa Tools
+# Initialize Kafka
 
 Using [troy-west/apache-kafka-cli-tools](https://github.com/troy-west/apache-kafka-cli-tools)
 
