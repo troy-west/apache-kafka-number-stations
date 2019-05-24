@@ -31,9 +31,7 @@ If you are having problems with docker similar to the following error messages, 
 
 ```
 driver failed programming external connectivity on endpoint
-
-or,
-
+-----
 input/output error
 ```
 
