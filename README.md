@@ -12,6 +12,36 @@ We created a radio that captured ~3hrs of mysterious global Number Station broad
 
 Can we filter, branch, translate, group, window, and aggregate these messages to decode the hidden message?
 
+# Troubleshooting
+
+## Downloading Oracle Java JDK
+
+1. Visit https://www.oracle.com/technetwork/java/javase/downloads/index.html
+2. Download Java SE 11 or above
+
+If you are asked to log in, try downloading one of the newer versions, then you may not need to log in.
+
+## Windows
+
+### Maven
+
+For any of the "mvn" commands below, run the shell snippets from "cmd.exe" rather than PowerShell.
+If you are inside a PowerShell terminal, run "cmd" to get to a simple shell.
+
+### Docker
+
+If you are having problems with docker similar to the following error messages, try restarting docker:
+
+```
+driver failed programming external connectivity on endpoint
+```
+
+or,
+
+```
+input/output error
+```
+
 # Initialize Kafka
 
 Using [troy-west/apache-kafka-cli-tools](https://github.com/troy-west/apache-kafka-cli-tools)
@@ -87,7 +117,9 @@ radio-logs:11:0
 
 At any time, run all the project tests with ```mvn test```
 
-# 1. Sample the radio
+# Examine the Data
+
+## 1. Sample the radio
 
 Take a look at a sample of twenty intercepted messages:
 
@@ -122,19 +154,20 @@ Produces content similar to:
 
 We have messages of type English, German, and Morse Code. There are also some spurious of type 'UXX'.
 
-# 2. Implement the JSON Serializer / Deserializer
+
+## 2. Implement the JSON Serializer / Deserializer
 
 Get numbers.JsonDeserializerTest and numbers.JsonSerializerTest working so that we can produce messages to radio-logs.
 
-# 3. Implement Producer.main
+## 3. Implement Producer.main
 
 Send each message returned by SecretRadio.listen() to the radio-logs topic
 
-# 4. Complete the Compute toplogy by fixing every test in ComputeTest
+## 4. Complete the Compute toplogy by fixing every test in ComputeTest
 
 Also remember to log/info each Scott Base message (there's no test for that)
 
-# 5. When all the tests are passing, run the application against your local Kafka Cluster
+## 5. When all the tests are passing, run the application against your local Kafka Cluster
 
 mvn clean compile exec:java -Dexec.mainClass="numbers.App"
 
@@ -165,47 +198,17 @@ As you progress through this project you can always reset the consumer offets li
 ./bin/kafka-consumer-groups.sh --bootstrap-server kafka-1:19092 --group compute-radio-logs --reset-offsets --to-earliest --execute --topic radio-logs
 ```
 
-# Parallelising our Compute
+## Parallelising our Compute
 
 What happens when you run more than one application (say on ports 8081, 8082, 8083), and why?
 
-# Build the app JAR
+## Build the app JAR
 
 mvn clean compile package
 
-# Run multiple versions of the app at once on different ports
+## Run multiple versions of the app at once on different ports
 
 java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8080 &
 java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8081 &
 
 It's a case for interactive queries!
-
-# Troubleshooting
-
-## Downloading Oracle Java JDK
-
-1. Visit https://www.oracle.com/technetwork/java/javase/downloads/index.html
-2. Download Java SE 11 or above
-
-If you are asked to log in, try downloading one of the newer versions, then you may not need to log in.
-
-## Windows
-
-### Maven
-
-For any of the "mvn" commands below, run the shell snippets from "cmd.exe" rather than PowerShell.
-If you are inside a PowerShell terminal, run "cmd" to get to a simple shell.
-
-### Docker
-
-If you are having problems with docker similar to the following error messages, try restarting docker:
-
-```
-driver failed programming external connectivity on endpoint
-```
-
-or,
-
-```
-input/output error
-```
