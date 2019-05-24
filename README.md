@@ -185,7 +185,7 @@ We want our messages to be interpreted at the time they declare in the :time fie
 
 * Get numbers.MessageTimeExtractor passing 
 
-Why should you never return a static number (like 0L) from the extractor? What impact does it have on compaction, deletion, etc?
+Why should you never return a static number (like 0L) from the extractor? Does it impact compaction, deletion, etc?
 
 ## Complete the Compute toplogy by fixing every test in ComputeTest
 
