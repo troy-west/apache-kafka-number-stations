@@ -14,12 +14,10 @@ Can we filter, branch, translate, group, window, and aggregate these messages to
 
 # Troubleshooting
 
-## Downloading Oracle Java JDK
+## Downloading Oracle Java JDK 11+
 
 1. Visit https://www.oracle.com/technetwork/java/javase/downloads/index.html
-2. Download Java SE 11 or above
-
-If you are asked to log in, try downloading one of the newer versions, then you may not need to log in.
+2. This project requires Java 9+ (we suggest 11+)
 
 ## Windows
 
