@@ -14,19 +14,18 @@ Can we filter, branch, translate, group, window, and aggregate these messages to
 
 # Troubleshooting
 
-## Downloading Oracle Java JDK 11+
+#### Downloading Oracle Java JDK 11+
 
 1. Visit https://www.oracle.com/technetwork/java/javase/downloads/index.html
 2. This project requires Java 9+ (we suggest 11+)
 
-## Windows
-
-### Maven
+#### Windows & Maven
 
 For any of the "mvn" commands below, run the shell snippets from "cmd.exe" rather than PowerShell.
+
 If you are inside a PowerShell terminal, run "cmd" to get to a simple shell.
 
-### Docker
+#### Docker
 
 If you are having problems with docker similar to the following error messages, try restarting docker:
 
