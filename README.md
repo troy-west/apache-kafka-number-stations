@@ -195,7 +195,12 @@ We are told that Scott Base is a special station that should be considered indep
 
 Use ```streams.branch(...)``` to split the filtered stream in two. Scott Base is the only station below -75 latitude.
 
+* Get numbers.ComputeTest.testBranchRestOfWorld passing
+* Get numbers.ComputeTest.testBranchScottBase passing
 
+## Translate Known, Rest of World Messages
+
+Use ```streams.map(...)``` or ```streams.mapValues(...)``` to translate the message stream with ```Translator.translate(...)```
 
 ## 5. When all the tests are passing, run the application against your local Kafka Cluster
 
