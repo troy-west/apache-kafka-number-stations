@@ -165,11 +165,19 @@ In order to create a producer that sends Message objects to Kafka, first we crea
 
 Do we throw or swallow exceptions in the serialization classes, and why?
 
-## 3. Implement Producer.main
+## Implement Producer.main
 
-Send each message returned by SecretRadio.listen() to the radio-logs topic
+Create a new KafkaProducer with the correct serializer, and send each message returned by SecretRadio.listen() to the radio-logs topic.
 
-## 4. Complete the Compute toplogy by fixing every test in ComputeTest
+What happens if you don't close the Producer and allow the JVM to exit immediately?
+
+Once implemented, you can produce the full broadcast to radio-logs via mvn:
+
+```bash
+mvn compile exec:java -Dexec.mainClass="numbers.Producer"
+```
+
+## Complete the Compute toplogy by fixing every test in ComputeTest
 
 Also remember to log/info each Scott Base message (there's no test for that)
 
