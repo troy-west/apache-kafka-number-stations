@@ -89,13 +89,13 @@ At any time, run all the project tests with ```mvn test```
 
 # 1. Sample the radio
 
-Take a look at the sort of messages we are working with
+Take a look at a sample of twenty intercepted messages:
 
 ```bash
 mvn compile exec:java -Dexec.mainClass="numbers.SecretRadio"
 ```
 
-Should produce output similar to:
+Produces content similar to:
 
 ```clojure
 {"time":1557125670767,"name":"060","type":"ENG","longitude":-105,"latitude":-35,"content":["one"]}
@@ -119,6 +119,8 @@ Should produce output similar to:
 {"time":1557125670860,"name":"444","type":"ENG","longitude":87,"latitude":29,"content":["one"]}
 {"time":1557125670872,"name":"065","type":"MOR","longitude":-102,"latitude":-34,"content":[".----"]}
 ```
+
+As you can see we have messages of type English, German, and Morse Code. There are also some spurious 'UXX' type messages.
 
 # 2. Implement the JSON Serializer / Deserializer
 
