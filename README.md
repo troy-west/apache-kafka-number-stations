@@ -171,11 +171,19 @@ Create a new KafkaProducer and send each message returned by SecretRadio.listen(
 
 What happens if you don't close the Producer and allow the JVM to exit immediately?
 
-Once implemented, you can produce the full broadcast to radio-logs via mvn:
+Once implemented, you can produce the full broadcast to radio-logs via:
 
 ```bash
 mvn compile exec:java -Dexec.mainClass="numbers.Producer"
 ```
+
+# Build a Streaming Compute Test First
+
+## Implement the MessageTimeExtractor
+
+We want our messages to be interpreted at the time they declare in the :time field rather than producer or log time. At this point we cover the different concepts of time in Kafka, and the big idea of deterministic recomputabiity. Broadly similar to favouring pure functions without side-effects.
+
+* Get numbers.MessageTimeExtractor passing 
 
 ## Complete the Compute toplogy by fixing every test in ComputeTest
 
