@@ -189,9 +189,13 @@ Use ```streams.filter(...)``` and ```Translator.knows(Message message)``` to fil
 
 * Get numbers.ComputeTest.testFilterKnown passing
 
-## Complete the Compute toplogy by fixing every test in ComputeTest
+## Branch Scott Base
 
-Also remember to log/info each Scott Base message (there's no test for that)
+We are told that Scott Base is a special station that should be considered independently.
+
+Use ```streams.branch(...)``` to split the filtered stream in two. Scott Base is the only station below -75 latitude.
+
+
 
 ## 5. When all the tests are passing, run the application against your local Kafka Cluster
 
