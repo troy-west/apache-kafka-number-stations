@@ -170,7 +170,7 @@ Once implemented, you can produce the full broadcast to radio-logs via:
 mvn compile exec:java -Dexec.mainClass="numbers.Producer"
 ```
 
-# Build a Streaming Compute Test First
+# Build Streaming Compute, Test First
 
 ## Implement the MessageTimeExtractor
 
@@ -205,6 +205,18 @@ Use ```streams.map(...)``` or ```streams.mapValues(...)``` to translate the mess
 * Get numbers.ComputeTest.testTranslate passing
 
 Why do we prefer streams.mapValues in this case? What is the consequence of using map?
+
+## Correlate Messages by Station and Window
+
+We are told that each station produces three messages in every 10s tumbling time window.
+
+Group the translated stream by Station, window the resultant stream by 10s time windows, and aggregate that grouped, windowed stream such that the three messages in a time window are reduced into a single message with three numbers as the content.
+
+In this case we use ```streams.groupByKey()```, ```streams.windowBy(...)```, and ```streams.aggregate(...)```.
+
+Make sure the KTable that results from the aggregation is materialized as 'PT10S-Store'.
+ 
+* Get numbers.ComputeTest.testCorrelate passing
 
 ## 5. When all the tests are passing, run the application against your local Kafka Cluster
 
