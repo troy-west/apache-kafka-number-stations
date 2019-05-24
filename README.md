@@ -202,7 +202,7 @@ Use ```streams.branch(...)``` to split the filtered stream in two. Scott Base is
 
 Use ```streams.map(...)``` or ```streams.mapValues(...)``` to translate the message stream with ```Translator.translate(...)```
 
-* get Get numbers.ComputeTest.testTranslate passing
+* Get numbers.ComputeTest.testTranslate passing
 
 Why do we prefer streams.mapValues in this case? What is the consequence of using map?
 
