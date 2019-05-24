@@ -206,7 +206,7 @@ Use ```streams.map(...)``` or ```streams.mapValues(...)``` to translate the mess
 
 Why do we prefer streams.mapValues in this case? What is the consequence of using map?
 
-## Correlate Messages by Station and Window
+## Correlate Messages by Station and Time Window
 
 We are told that each station produces three messages in every 10s tumbling time window.
 
