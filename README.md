@@ -277,8 +277,8 @@ The decoded image doesn't quite match the source (src/main/resources/source.png)
 That's because Scott Base is special. It broadcasts a rotation factor for each time window, e.g.
 
 * 0 - don't rotate any of the three numbers.
-* 1 - rotate each number left one.
-* 2 - rotate each number left two.
+* 1 - rotate the numbers left one ([111 222 333] becomes [222 333 111]).
+* 2 - rotate each number left two ([111 222 333] becomes [333 111 222]).
 
 If we use Scott Base as a further cipher we could aggregate that cipher to a different ktable, then join the stream
 of correlated messages with that, rotating where appropriate. This is left up to the adventurous (and may require dropping into the Processor API)
