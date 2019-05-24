@@ -1,6 +1,6 @@
 # Apache Kafka Three Ways: Number Stations
 
-A practical programming exercise that introduces the TestTopologyDriver to test-drive the build of a streaming compute application.
+A practical exercise that introduces the TestTopologyDriver to test drive the development of a streaming compute application.
 
 Use in unison with [TW AK3W Workshop](https://github.com/troy-west/apache-kafka-three-ways).
 
@@ -98,26 +98,26 @@ mvn compile exec:java -Dexec.mainClass="numbers.SecretRadio"
 Should produce output similar to:
 
 ```clojure
-{"time":1557125670773,"name":"303","type":"ENG","longitude":16,"latitude":5,"content":["one"]}
-{"time":1557125670774,"name":"X-RAY","type":"UXX","longitude":0,"latitude":0,"content":null}
-{"time":1557125670798,"name":"303","type":"ENG","longitude":16,"latitude":5,"content":["one"]}
-{"time":1557125670799,"name":"X-RAY","type":"UXX","longitude":0,"latitude":0,"content":null}
+{"time":1557125670767,"name":"060","type":"ENG","longitude":-105,"latitude":-35,"content":["one"]}
+{"time":1557125670768,"name":"X-RAY","type":"UXX","longitude":0,"latitude":0,"content":null}
+{"time":1557125670784,"name":"284","type":"MOR","longitude":7,"latitude":2,"content":[".----"]}
+{"time":1557125670785,"name":"X-RAY","type":"UXX","longitude":0,"latitude":0,"content":null}
+{"time":1557125670792,"name":"060","type":"ENG","longitude":-105,"latitude":-35,"content":["one"]}
+{"time":1557125670797,"name":"172","type":"GER","longitude":-49,"latitude":-16,"content":["eins"]}
 {"time":1557125670799,"name":"NZ1","type":"ENG","longitude":166,"latitude":-78,"content":["two"]}
-{"time":1557125670816,"name":"308","type":"MOR","longitude":19,"latitude":6,"content":[".----"]}
-{"time":1557125670823,"name":"303","type":"ENG","longitude":16,"latitude":5,"content":["one"]}
+{"time":1557125670809,"name":"284","type":"MOR","longitude":7,"latitude":2,"content":[".----"]}
+{"time":1557125670817,"name":"060","type":"ENG","longitude":-105,"latitude":-35,"content":["one"]}
+{"time":1557125670822,"name":"172","type":"GER","longitude":-49,"latitude":-16,"content":["eins"]}
 {"time":1557125670824,"name":"NZ1","type":"ENG","longitude":166,"latitude":-78,"content":["two"]}
-{"time":1557125670841,"name":"285","type":"ENG","longitude":7,"latitude":2,"content":["one"]}
-{"time":1557125670841,"name":"308","type":"MOR","longitude":19,"latitude":6,"content":[".----"]}
+{"time":1557125670824,"name":"233","type":"MOR","longitude":-18,"latitude":-6,"content":[".----"]}
+{"time":1557125670834,"name":"284","type":"MOR","longitude":7,"latitude":2,"content":[".----"]}
+{"time":1557125670847,"name":"065","type":"MOR","longitude":-102,"latitude":-34,"content":[".----"]}
+{"time":1557125670847,"name":"172","type":"GER","longitude":-49,"latitude":-16,"content":["eins"]}
 {"time":1557125670849,"name":"NZ1","type":"ENG","longitude":166,"latitude":-78,"content":["two"]}
-{"time":1557125670850,"name":"078","type":"ENG","longitude":-96,"latitude":-32,"content":["one"]}
-{"time":1557125670865,"name":"362","type":"MOR","longitude":46,"latitude":15,"content":[".----"]}
-{"time":1557125670866,"name":"285","type":"ENG","longitude":7,"latitude":2,"content":["one"]}
-{"time":1557125670866,"name":"308","type":"MOR","longitude":19,"latitude":6,"content":[".----"]}
-{"time":1557125670871,"name":"015","type":"ENG","longitude":-127,"latitude":-42,"content":["one"]}
-{"time":1557125670875,"name":"078","type":"ENG","longitude":-96,"latitude":-32,"content":["one"]}
-{"time":1557125670890,"name":"362","type":"MOR","longitude":46,"latitude":15,"content":[".----"]}
-{"time":1557125670891,"name":"285","type":"ENG","longitude":7,"latitude":2,"content":["one"]}
-{"time":1557125670896,"name":"015","type":"ENG","longitude":-127,"latitude":-42,"content":["one"]}
+{"time":1557125670849,"name":"233","type":"MOR","longitude":-18,"latitude":-6,"content":[".----"]}
+{"time":1557125670854,"name":"361","type":"GER","longitude":45,"latitude":15,"content":["eins"]}
+{"time":1557125670860,"name":"444","type":"ENG","longitude":87,"latitude":29,"content":["one"]}
+{"time":1557125670872,"name":"065","type":"MOR","longitude":-102,"latitude":-34,"content":[".----"]}
 ```
 
 # 2. Implement the JSON Serializer / Deserializer
