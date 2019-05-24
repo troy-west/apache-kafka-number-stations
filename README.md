@@ -174,9 +174,10 @@ mvn compile exec:java -Dexec.mainClass="numbers.Producer"
 
 ## Implement the MessageTimeExtractor
 
-We want our messages to be interpreted at the time they declare in the :time field rather than producer or log time. At this point we cover the different concepts of time in Kafka, and the big idea of deterministic recomputabiity. Broadly similar to favouring pure functions without side-effects.
+We want our messages to be interpreted at the time they declare in the :time field rather than producer or log time. At this point we cover the different concepts of time in Kafka, and the big idea of deterministic recomputabiity. Broadly similar to favouring pure functions without side-effects in a functional programming sense.
 
 * Get numbers.MessageTimeExtractor passing 
+* Get numbers.ComputeTest.testStreamTimestampExtraction passing
 
 Why should you never return a static number (like 0L) from the extractor? Does it impact compaction, deletion, etc?
 
