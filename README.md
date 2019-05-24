@@ -1,6 +1,6 @@
 # Apache Kafka Three Ways: Number Stations
 
-A practical exercise that introduces the TestTopologyDriver to test drive the development of a streaming compute application.
+A practical exercise introducing the TestTopologyDriver to test drive development of a streaming compute application.
 
 Use in unison with [TW AK3W Workshop](https://github.com/troy-west/apache-kafka-three-ways).
 
