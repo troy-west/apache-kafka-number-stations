@@ -91,7 +91,34 @@ At any time, run all the project tests with ```mvn test```
 
 Take a look at the sort of messages we are working with
 
+```bash
 mvn compile exec:java -Dexec.mainClass="numbers.SecretRadio"
+```
+
+Should produce output similar to:
+
+```clojure
+{"time":1557125670773,"name":"303","type":"ENG","longitude":16,"latitude":5,"content":["one"]}
+{"time":1557125670774,"name":"X-RAY","type":"UXX","longitude":0,"latitude":0,"content":null}
+{"time":1557125670798,"name":"303","type":"ENG","longitude":16,"latitude":5,"content":["one"]}
+{"time":1557125670799,"name":"X-RAY","type":"UXX","longitude":0,"latitude":0,"content":null}
+{"time":1557125670799,"name":"NZ1","type":"ENG","longitude":166,"latitude":-78,"content":["two"]}
+{"time":1557125670816,"name":"308","type":"MOR","longitude":19,"latitude":6,"content":[".----"]}
+{"time":1557125670823,"name":"303","type":"ENG","longitude":16,"latitude":5,"content":["one"]}
+{"time":1557125670824,"name":"NZ1","type":"ENG","longitude":166,"latitude":-78,"content":["two"]}
+{"time":1557125670841,"name":"285","type":"ENG","longitude":7,"latitude":2,"content":["one"]}
+{"time":1557125670841,"name":"308","type":"MOR","longitude":19,"latitude":6,"content":[".----"]}
+{"time":1557125670849,"name":"NZ1","type":"ENG","longitude":166,"latitude":-78,"content":["two"]}
+{"time":1557125670850,"name":"078","type":"ENG","longitude":-96,"latitude":-32,"content":["one"]}
+{"time":1557125670865,"name":"362","type":"MOR","longitude":46,"latitude":15,"content":[".----"]}
+{"time":1557125670866,"name":"285","type":"ENG","longitude":7,"latitude":2,"content":["one"]}
+{"time":1557125670866,"name":"308","type":"MOR","longitude":19,"latitude":6,"content":[".----"]}
+{"time":1557125670871,"name":"015","type":"ENG","longitude":-127,"latitude":-42,"content":["one"]}
+{"time":1557125670875,"name":"078","type":"ENG","longitude":-96,"latitude":-32,"content":["one"]}
+{"time":1557125670890,"name":"362","type":"MOR","longitude":46,"latitude":15,"content":[".----"]}
+{"time":1557125670891,"name":"285","type":"ENG","longitude":7,"latitude":2,"content":["one"]}
+{"time":1557125670896,"name":"015","type":"ENG","longitude":-127,"latitude":-42,"content":["one"]}
+```
 
 # 2. Implement the JSON Serializer / Deserializer
 
