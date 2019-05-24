@@ -185,9 +185,9 @@ Why should you never return a static number (like 0L) from the extractor? Does i
 
 We provide a Translator class that can decode individual messages from German, English, and Morse Code into numeric.
 
-Use ```Java Translator.knows(Message message)``` to filter out unknown messages.
+Use ```streams.filter(...)``` and ```Translator.knows(Message message)``` to filter out unknown messages.
 
-In order to do this, we use the stream.filter(...) Kafka Streams functionality.
+* Get numbers.ComputeTest.testFilterKnown passing
 
 ## Complete the Compute toplogy by fixing every test in ComputeTest
 
