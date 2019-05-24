@@ -120,7 +120,7 @@ Produces content similar to:
 {"time":1557125670872,"name":"065","type":"MOR","longitude":-102,"latitude":-34,"content":[".----"]}
 ```
 
-As you can see we have messages of type English, German, and Morse Code. There are also some spurious 'UXX' type messages.
+We have messages of type English, German, and Morse Code. There are also some spurious of type 'UXX'.
 
 # 2. Implement the JSON Serializer / Deserializer
 
