@@ -4,6 +4,8 @@ A practical exercise introducing the TestTopologyDriver to drive development of 
 
 Use in unison with [TW AK3W Workshop](https://github.com/troy-west/apache-kafka-three-ways), a solution to this exercise is [available here](https://github.com/troy-west/apache-kafka-number-stations-sln).
 
+This project is also available [in Clojure](https://github.com/troy-west/apache-kafka-number-stations-clj).
+
 # Background
 
 [Number Stations](https://en.wikipedia.org/wiki/Numbers_station) are shortwave radio stations that broadcast formatted numbers, which are believed to be addressed to intelligence officers operating in foreign countries.
