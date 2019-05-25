@@ -289,4 +289,6 @@ of correlated messages with that, rotating where appropriate. This is left up to
 
 If you do complete the extension problem, please do raise a PR to the [solution project](https://github.com/troy-west/apache-kafka-number-stations-sln)!
 
+----
+
 Copyright © 2019 Troy-West, Pty Ltd. MIT Licensed.
