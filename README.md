@@ -286,3 +286,7 @@ That's because Scott Base is special. It broadcasts a rotation factor for each t
 
 If we use Scott Base as a further cipher we could aggregate that cipher to a different ktable, then join the stream
 of correlated messages with that, rotating where appropriate. This is left up to the adventurous (and may require dropping into the Processor API)
+
+If you do complete the extension problem, please do raise a PR to the [solution project](https://github.com/troy-west/apache-kafka-number-stations-sln)!
+
+Copyright © 2019 Troy-West, Pty Ltd. MIT Licensed.
