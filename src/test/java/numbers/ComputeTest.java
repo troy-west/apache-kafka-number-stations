@@ -65,6 +65,7 @@ public class ComputeTest extends TestCase {
         }
     }
 
+    // Confirm the timestamp extracted for a consumer record matches the time provided by the message
     public void testStreamTimestampExtraction() {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Compute.createStream(builder);
@@ -80,6 +81,7 @@ public class ComputeTest extends TestCase {
         }
     }
 
+    // Demonstrate the ability to filter out messages that return false to Translator.knows(...)
     public void testFilterKnown() {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Compute.createStream(builder);
@@ -104,6 +106,7 @@ public class ComputeTest extends TestCase {
         }
     }
 
+    // Split the stream in two, testing the new rest-of-world stream first
     public void testBranchRestOfWorld() {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Compute.createStream(builder);
@@ -129,6 +132,7 @@ public class ComputeTest extends TestCase {
         }
     }
 
+    // Split the stream in two, testing the new scott base stream second
     public void testBranchScottBase() {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Compute.createStream(builder);
@@ -151,6 +155,7 @@ public class ComputeTest extends TestCase {
         }
     }
 
+    // Demonstrate the ability to mutate the stream, translating words into numeric strings
     public void testTranslate() {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Compute.createStream(builder);
@@ -175,6 +180,7 @@ public class ComputeTest extends TestCase {
         }
     }
 
+    // Prove the result of grouping, windowing, and aggregating the stream into a k-table ("PT10S-Store")
     public void testCorrelate() {
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, Message> stream = Compute.createStream(builder);
