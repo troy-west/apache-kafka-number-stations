@@ -293,8 +293,8 @@ mvn clean compile package
 
 ## Run multiple versions of the app at once on different ports
 
-* java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8080 &
-* java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8081 &
+* java -jar target/apache-kafka-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8080 &
+* java -jar target/apache-kafka-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8081 &
 
 What image is displayed on each port, and why? What happens to local KTable state if you start more instances?
 
