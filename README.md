@@ -114,6 +114,8 @@ radio-logs:11:0
 
 At any time, run all the project tests with ```mvn test```
 
+The NullPointerExceptions that you initially see are simply because you haven't implemented certain things yet.
+
 # Examine the Data
 
 ## Sample the radio

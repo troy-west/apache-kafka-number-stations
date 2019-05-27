@@ -49,7 +49,8 @@ public class Compute {
     }
 
     public static KTable<Windowed<String>, Message> correlate(KStream<String, Message> stream) {
-        // TODO: Implement me. Correlate all messages by station name in tumbling 10 second windows
+        // TODO: Implement me. Group messages by key, then window by 10s tumbling time windows, then aggregate each window into a single message with a content tuple of three numbers
+        // TODO: finally, make sure the k-table is materialized to "PT10S-Store"
         return null;
     }
 
