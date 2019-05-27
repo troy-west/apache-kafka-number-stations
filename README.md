@@ -174,6 +174,26 @@ Once implemented, you can produce the full broadcast to radio-logs via:
 mvn compile exec:java -Dexec.mainClass="numbers.Producer"
 ```
 
+Once produced, take another look at the partitions and offsets of the radio-logs topic:
+
+```bash
+# ./bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list kafka-1:19092 --topic radio-logs --time -1
+radio-logs:0:121272
+radio-logs:1:70920
+radio-logs:2:125806
+radio-logs:3:114417
+radio-logs:4:102927
+radio-logs:5:102933
+radio-logs:6:107544
+radio-logs:7:114376
+radio-logs:8:93776
+radio-logs:9:123552
+radio-logs:10:77787
+radio-logs:11:82374
+```
+
+The distribution is a bit lumpy, more messages in partition 9 than partition 8 for instance. Why is that?
+
 # Build Streaming Compute, Test First
 
 ## Implement the MessageTimeExtractor
@@ -236,7 +256,7 @@ You can run that topology against your local cluster:
 mvn clean compile exec:java -Dexec.mainClass="numbers.App"
 ```
 
-Navigate to localhost:8080 to inspect the decoded message! It may take a minute or two to process.
+Navigate to localhost:8080 to inspect the decoded message! It may take a minute to process, and you may want to reload the page to see progress.
 
 While the logs are being computed you can check on progress by looking at the offsets of the consumer group
 
@@ -276,7 +296,9 @@ mvn clean compile package
 * java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8080 &
 * java -jar target/apache-kafka-java-number-stations-1.0-SNAPSHOT-jar-with-dependencies.jar 8081 &
 
-It's a case for interactive queries!
+What image is displayed on each port, and why? What happens to local KTable state if you start more instances?
+
+It's a case for Interactive Queries!
 
 # An Extension
 
